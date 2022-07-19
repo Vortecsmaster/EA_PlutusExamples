@@ -70,7 +70,7 @@ give amount = do
     logInfo @String $ printf "made a gift of %d lovelace" amount                                     --This line log info,usable on the PP(Plutus Playground)
     
 --grab :: forall w s e. AsContractError e => Contract w s e ()                                     
-grab :: forall w s e. AsContractError e => Integer -> Contract w s e ()                              --w= The Contract  s=Schema  e=Error or value of type a                                 
+grab :: forall w s e. AsContractError e => Integer -> Contract w s e ()                              -- The Contract  s=Schema  e=Error or value restricted from AsContractError                                 
 grab n = do
     utxos <- utxosAt scrAddress                                                                      -- This will find all UTXOs that sit at the script address
     let orefs   = fst <$> Map.toList utxos                                                           -- This get all the references of the UTXOs
