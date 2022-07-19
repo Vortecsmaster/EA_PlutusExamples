@@ -44,9 +44,9 @@ instance Scripts.ValidatorTypes Typed where
     type instance RedeemerType Typed = Integer        -- Type instance to definte the type of Redeemer
 
 typedValidator :: Scripts.TypedValidator Typed
-typedValidator = Scripts.mkTypedValidator @Typed      -- Tell the compiler that you are using Types
+typedValidator = Scripts.mkTypedValidator @Typed      -- Tell the compiler that you are using Typed
     $$(PlutusTx.compile [|| typedRedeemer ||]) 
-    $$(PlutusTx.compile [|| wrap ||])                -- Provide the translation into high level typed to low level typed
+    $$(PlutusTx.compile [|| wrap ||])                -- Provide the translation into high level typed to low level types
   where
     wrap = Scripts.wrapValidator @() @Integer        -- Tell wrapvalidtor which types to use for Datum and Redeemer
     
@@ -83,7 +83,7 @@ grab n = do
                   Constraints.otherScript validator                                                  -- and inform about the actual validator (the spending tx needs to provide the actual validator)
         tx :: TxConstraints Void Void                                                            
         tx      = mconcat [mustSpendScriptOutput oref $ Redeemer $ Builtins.mkI n | oref <- orefs]  -- Define the TX giving constrains, one for each UTXO sitting on this addrs,
-                                                                                                     -- must provide a redeemer (ignored in this case)
+                                                                                                     
     ledgerTx <- submitTxConstraintsWith @Void lookups tx                                             -- Allow the wallet to construct the tx with the necesary information
     void $ awaitTxConfirmed $ getCardanoTxId ledgerTx                                                -- Wait for confirmation
     logInfo @String $ "collected gifts"                                                              -- Log information 
@@ -92,8 +92,8 @@ endpoints :: Contract () GiftSchema Text ()
 endpoints = awaitPromise (give' `select` grab') >> endpoints                                         -- Asynchronously wait for the endpoints interactions from the wallet
   where                                                                                              -- and recursively wait for the endpoints all over again
     give' = endpoint @"give" give                                                                    -- block until give
-    grab' = endpoint @"grab" grab
-    --grab' = endpoint @"grab" $ const grab                                                            -- block until grab
+    grab' = endpoint @"grab" grab                                                                    -- block until grab
+                                                              
 
 mkSchemaDefinitions ''GiftSchema                                                                     -- Generate the Schema for that
 
