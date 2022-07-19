@@ -96,8 +96,7 @@ endpoints :: Contract () GiftSchema Text ()
 endpoints = awaitPromise (give' `select` grab') >> endpoints                                         -- Asynchronously wait for the endpoints interactions from the wallet
   where                                                                                              -- and recursively wait for the endpoints all over again
     give' = endpoint @"give" give                                                                    -- block until give
-    grab' = endpoint @"grab" grab
-    --grab' = endpoint @"grab" $ const grab                                                            -- block until grab
+    grab' = endpoint @"grab" grab                                                                    -- block until grab
 
 mkSchemaDefinitions ''GiftSchema                                                                     -- Generate the Schema for that
 
