@@ -1,9 +1,14 @@
 ### Index of available examples
 
-001 - AlwaysSucceedsandFails
-002
-003
-004
+| No  |      Contrato      |
+| --- | ----------- |
+| 001 | AlwaysSucceedsandFails |
+| 002 | JustRedeemer | 
+| 003 | TypedValidator |
+| 004 | CustomTypedValidator |
+
+
+
 005
 006
 007
