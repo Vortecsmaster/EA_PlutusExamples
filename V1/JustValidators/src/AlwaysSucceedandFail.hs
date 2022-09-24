@@ -27,11 +27,11 @@ import           Ledger.Ada                     as Ada
 import           Plutus.Trace
 import qualified Plutus.Trace.Emulator          as Emulator
 import qualified Wallet.Emulator.Wallet         as Wallet
---Plutus Playground
+{-Plutus Playground (broken)
 import           Playground.Contract            (printJson, printSchemas, ensureKnownCurrencies, stage)
 import           Playground.TH                  (mkKnownCurrencies, mkSchemaDefinitions)
 import           Playground.Types               (KnownCurrency (..))
---"Normal" Haskell
+--"Normal" Haskell -}
 import           Control.Monad                  hiding (fmap)
 import           Data.Map                       as Map
 import           Data.Text                      (Text)
@@ -63,6 +63,7 @@ scrAddress :: V1Address.Address
 scrAddress = V1Address.scriptHashAddress valHash          -- Couldn't find a new version of scriptAddress for unTyped Scripts
 --replaces:
 --scrAddress = scriptAddress validator 
+
 
 --THE OFFCHAIN CODE
 

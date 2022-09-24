@@ -80,7 +80,8 @@ give amount = do
 grab :: forall w s e. AsContractError e => Contract w s e ()                                     
 grab = do
     utxos <- utxosAt scrAddress                                                                      -- This will find all UTXOs that sit at the script address
-    let orefs   = fst <$> Map.toList utxos                                                           -- This get all the references of the UTXOs
+    let orefs   = fst <$> Map.toList utxos                         
+                                  -- This get all the references of the UTXOs
         lookups = Constraints.unspentOutputs utxos      <>                                           -- Tell where to find all the UTXOS
                   Constraints.plutusV2OtherScript validator                                          -- and inform about the actual validator (the spending tx needs to provide the actual validator)
         tx :: TxConstraints Void Void                                                            
