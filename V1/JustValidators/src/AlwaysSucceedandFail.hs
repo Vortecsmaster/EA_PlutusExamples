@@ -7,26 +7,65 @@
 {-# LANGUAGE TypeFamilies        #-}  --Allow use and definition of indexed type and data families
 {-# LANGUAGE TypeOperators       #-}  --Allow the use and definition of types with operator names
 
-module OurGift where
+module AlwaysSucceedandFail where
 
-import           Control.Monad       hiding (fmap)
-import           Data.Map            as Map
-import           Data.Text           (Text)
-import           Data.Void           (Void)
-import           Plutus.Contract
+--PlutusTx 
 import           PlutusTx            (Data (..))
 import qualified PlutusTx
 import qualified PlutusTx.Builtins   as Builtins
 import           PlutusTx.Prelude    hiding (Semigroup(..), unless)
+s
+--Contract Monad
+import           Plutus.Contract
+
+--Ledger 
 import           Ledger              hiding (singleton)
 import           Ledger.Constraints  as Constraints
-import qualified Ledger.Scripts      as Scripts               -- Low Level Typed Validator 
+import qualified Ledger.Scripts      as Scripts               
 import           Ledger.Ada          as Ada
+{-
+import qualified Ledger.Address as V1LAddress
+import qualified Plutus.V2.Ledger.Api as V2LedgerApi
+import qualified Plutus.V2.Ledger.Contexts                       as Contexts
+import qualified Plutus.Script.Utils.V2.Typed.Scripts.Validators as V2UtilsTypeScripts
+
+-- Haskell imports
+import qualified Control.Monad            as Monad (void)
+import qualified GHC.Generics                        as GHCGenerics (Generic)
+import qualified Data.Aeson                          as DataAeson (ToJSON, FromJSON)
+import qualified Data.OpenApi.Schema                 as DataOpenApiSchema (ToSchema)
+import qualified Prelude                  as P
+import qualified Data.Void                as Void (Void)
+import qualified Data.Map                 as Map
+import qualified Data.Text                           as DataText (Text)
+
+-- Plutus imports
+import qualified PlutusTx
+import PlutusTx.Prelude
+import qualified Plutus.Contract          as PlutusContract
+import qualified Ledger.Ada               as Ada
+import qualified Ledger.Tx                as LedgerTx
+import qualified Plutus.V2.Ledger.Api                            as LedgerApiV2
+import qualified Ledger                                          (PaymentPubKeyHash, Value)
+import qualified Text.Printf              as TextPrintf (printf)
+import qualified Ledger.Constraints       as Constraints
+import qualified Plutus.V1.Ledger.Scripts as ScriptsLedger
+-}
+
+
+--Plutus Playground
 import           Playground.Contract (printJson, printSchemas, ensureKnownCurrencies, stage)
 import           Playground.TH       (mkKnownCurrencies, mkSchemaDefinitions)
 import           Playground.Types    (KnownCurrency (..))
+
+--"Normal" Haskell
+import           Control.Monad       hiding (fmap)
+import           Data.Map            as Map
+import           Data.Text           (Text)
+import           Data.Void           (Void)
 import           Prelude             (IO, Semigroup (..), String)
 import           Text.Printf         (printf)
+
 
 {-# OPTIONS_GHC -fno-warn-unused-imports #-}
 
