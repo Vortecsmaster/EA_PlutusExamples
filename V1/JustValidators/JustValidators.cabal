@@ -2,11 +2,12 @@ cabal-version:      2.4
 name:               JustValidators
 version:            0.1.0.0
 synopsis:           JustValidators bootsrap cabal project
-homepage:
+homepage:           https://www.vortecsla.com/plutus
+license:            MIT
 license-file:       LICENSE
 author:             Roberto J. Cerrud
 maintainer:         vortecsmaster@vortecsla.com
-category:           Concurrency
+category:           Education
 extra-source-files: CHANGELOG.md
 
 library
@@ -25,10 +26,12 @@ library
                       , plutus-ledger -any
                       , plutus-ledger-api -any
                       , plutus-ledger-constraints -any
+                      , plutus-script-utils
                       , plutus-tx -any
                       , plutus-tx-plugin -any
                       , text -any
                       , lens -any
+                      , serialise
     hs-source-dirs:   src
     default-language: Haskell2010
 

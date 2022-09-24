@@ -10,61 +10,35 @@
 module AlwaysSucceedandFail where
 
 --PlutusTx 
-import           PlutusTx            (Data (..))
+import           PlutusTx                       (Data (..))
 import qualified PlutusTx
-import qualified PlutusTx.Builtins   as Builtins
-import           PlutusTx.Prelude    hiding (Semigroup(..), unless)
-s
+import qualified PlutusTx.Builtins              as Builtins
+import           PlutusTx.Prelude               hiding (Semigroup(..), unless)
 --Contract Monad
-import           Plutus.Contract
-
+import           Plutus.Contract               
 --Ledger 
-import           Ledger              hiding (singleton)
-import           Ledger.Constraints  as Constraints
-import qualified Ledger.Scripts      as Scripts               
-import           Ledger.Ada          as Ada
-{-
-import qualified Ledger.Address as V1LAddress
-import qualified Plutus.V2.Ledger.Api as V2LedgerApi
-import qualified Plutus.V2.Ledger.Contexts                       as Contexts
-import qualified Plutus.Script.Utils.V2.Typed.Scripts.Validators as V2UtilsTypeScripts
-
--- Haskell imports
-import qualified Control.Monad            as Monad (void)
-import qualified GHC.Generics                        as GHCGenerics (Generic)
-import qualified Data.Aeson                          as DataAeson (ToJSON, FromJSON)
-import qualified Data.OpenApi.Schema                 as DataOpenApiSchema (ToSchema)
-import qualified Prelude                  as P
-import qualified Data.Void                as Void (Void)
-import qualified Data.Map                 as Map
-import qualified Data.Text                           as DataText (Text)
-
--- Plutus imports
-import qualified PlutusTx
-import PlutusTx.Prelude
-import qualified Plutus.Contract          as PlutusContract
-import qualified Ledger.Ada               as Ada
-import qualified Ledger.Tx                as LedgerTx
-import qualified Plutus.V2.Ledger.Api                            as LedgerApiV2
-import qualified Ledger                                          (PaymentPubKeyHash, Value)
-import qualified Text.Printf              as TextPrintf (printf)
-import qualified Ledger.Constraints       as Constraints
-import qualified Plutus.V1.Ledger.Scripts as ScriptsLedger
--}
-
-
+import           Ledger                         hiding (singleton)
+import qualified Ledger.Address                 as V1Address
+import           Ledger.Constraints             as Constraints              -- Same library name, different functions for V1 and V2 in some cases
+--import qualified Ledger.Scripts               as Scripts               
+import qualified Plutus.Script.Utils.V1.Scripts as Scripts                  -- New library name for Typed Validators and some new fuctions
+import           Ledger.Ada                     as Ada
+--Trace Emulator
+import           Plutus.Trace
+import qualified Plutus.Trace.Emulator          as Emulator
+import qualified Wallet.Emulator.Wallet         as Wallet
 --Plutus Playground
-import           Playground.Contract (printJson, printSchemas, ensureKnownCurrencies, stage)
-import           Playground.TH       (mkKnownCurrencies, mkSchemaDefinitions)
-import           Playground.Types    (KnownCurrency (..))
-
+import           Playground.Contract            (printJson, printSchemas, ensureKnownCurrencies, stage)
+import           Playground.TH                  (mkKnownCurrencies, mkSchemaDefinitions)
+import           Playground.Types               (KnownCurrency (..))
 --"Normal" Haskell
-import           Control.Monad       hiding (fmap)
-import           Data.Map            as Map
-import           Data.Text           (Text)
-import           Data.Void           (Void)
-import           Prelude             (IO, Semigroup (..), String)
-import           Text.Printf         (printf)
+import           Control.Monad                  hiding (fmap)
+import           Data.Map                       as Map
+import           Data.Text                      (Text)
+import           Data.Void                      (Void)
+import           Prelude                        (IO, Semigroup (..), String, show)
+import           Text.Printf                    (printf)
+import           Control.Monad.Freer.Extras     as Extras
 
 
 {-# OPTIONS_GHC -fno-warn-unused-imports #-}
@@ -73,20 +47,22 @@ import           Text.Printf         (printf)
 
 {-# INLINABLE alwaysSucceeds #-} -- Everything that its supposed to run in on-chain code need this pragma
 alwaysSucceeds :: BuiltinData -> BuiltinData -> BuiltinData -> ()   -- the value of this function is on its sideeffects
-alwaysSucceeds _ _ _ = () --AlwaysSucceed
+alwaysSucceeds _ _ _ = () 
 
 {-# INLINABLE alwaysFails #-}
 alwaysFails :: BuiltinData -> BuiltinData -> BuiltinData -> ()   
-alwaysFails _ _ _ = error () --you can also change this to traceError "BURNT!"
+alwaysFails _ _ _ = error () 
 
 validator :: Validator
-validator = mkValidatorScript $$(PlutusTx.compile [|| alwaysSucceeds ||])  --2nd example change this to alwaysFails
+validator = mkValidatorScript $$(PlutusTx.compile [|| alwaysSucceeds ||])  
 
 valHash :: Ledger.ValidatorHash
-valHash = Scripts.validatorHash validator  -- The hash of the validator
+valHash = Scripts.validatorHash validator  
 
-scrAddress :: Ledger.Address
-scrAddress = scriptAddress validator --You apply scriptAddress to the validator and you get the script address on the blockchain
+scrAddress :: V1Address.Address
+scrAddress = V1Address.scriptHashAddress valHash          -- Couldn't find a new version of scriptAddress for unTyped Scripts
+--replaces:
+--scrAddress = scriptAddress validator 
 
 --THE OFFCHAIN CODE
 
@@ -99,20 +75,20 @@ give amount = do
     let tx = mustPayToOtherScript valHash (Datum $ Builtins.mkI 0) $ Ada.lovelaceValueOf amount      --This Tx needs an output, thats its going to be the Script Address, Datum MUST be specified, so is created and the ammount of lovelaces
     ledgerTx <- submitTx tx                                                                          --This line submit the Tx
     void $ awaitTxConfirmed $ getCardanoTxId ledgerTx                                                --This line waits for confirmation
-    logInfo @String $ printf "made a gift of %d lovelace" amount                                     --This line log info,usable on the PP(Plutus Playground)
+    Plutus.Contract.logInfo @String $ printf "made a gift of %d lovelace" amount                                     --This line log info,usable on the PP(Plutus Playground)
     
 grab :: forall w s e. AsContractError e => Contract w s e ()                                     
 grab = do
     utxos <- utxosAt scrAddress                                                                      -- This will find all UTXOs that sit at the script address
     let orefs   = fst <$> Map.toList utxos                                                           -- This get all the references of the UTXOs
         lookups = Constraints.unspentOutputs utxos      <>                                           -- Tell where to find all the UTXOS
-                  Constraints.otherScript validator                                                  -- and inform about the actual validator (the spending tx needs to provide the actual validator)
+                  Constraints.plutusV1OtherScript validator                                          -- and inform about the actual validator (the spending tx needs to provide the actual validator)
         tx :: TxConstraints Void Void                                                            
         tx      = mconcat [mustSpendScriptOutput oref $ Redeemer $ Builtins.mkI 17 | oref <- orefs]  -- Define the TX giving constrains, one for each UTXO sitting on this addrs,
                                                                                                      -- must provide a redeemer (ignored in this case)
     ledgerTx <- submitTxConstraintsWith @Void lookups tx                                             -- Allow the wallet to construct the tx with the necesary information
     void $ awaitTxConfirmed $ getCardanoTxId ledgerTx                                                -- Wait for confirmation
-    logInfo @String $ "collected gifts"                                                              -- Log information 
+    Plutus.Contract.logInfo @String $ "collected gifts"                                                              -- Log information 
 
 endpoints :: Contract () GiftSchema Text ()
 endpoints = awaitPromise (give' `select` grab') >> endpoints                                         -- Asynchronously wait for the endpoints interactions from the wallet
@@ -120,6 +96,19 @@ endpoints = awaitPromise (give' `select` grab') >> endpoints                    
     give' = endpoint @"give" give                                                                    -- block until give
     grab' = endpoint @"grab" $ const grab                                                            -- block until grab
 
-mkSchemaDefinitions ''GiftSchema                                                                     -- Generate the Schema for that
+-- Playground broken at the moment - September 2022
+-- mkSchemaDefinitions ''GiftSchema                                                                     -- Generate the Schema for the playground
+-- mkKnownCurrencies []                                                                                 -- MakeKnown currencies for the playground to have some ADA available
 
-mkKnownCurrencies []                                                                                 -- MakeKnown currencies for the playground to have some ADA available
+
+--SIMULATION
+
+test :: IO ()
+test = runEmulatorTraceIO $ do
+    h1 <- activateContractWallet (Wallet.knownWallet 1) endpoints
+    h2 <- activateContractWallet (Wallet.knownWallet 2) endpoints
+    callEndpoint @"give" h1 $ 51000000
+    void $ Emulator.waitNSlots 11
+    callEndpoint @"grab" h2 ()
+    s <- Emulator.waitNSlots 11
+    Extras.logInfo $ "End of Simulation at slot " ++ show s

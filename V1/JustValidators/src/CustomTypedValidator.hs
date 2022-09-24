@@ -7,7 +7,7 @@
 {-# LANGUAGE TypeFamilies        #-}
 {-# LANGUAGE TypeOperators       #-}
 
-module OurCustomTypedRedeemer where
+module CustomTypedValidator where
 
 import           Control.Monad       hiding (fmap)
 import           Data.Map            as Map

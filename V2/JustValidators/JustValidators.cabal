@@ -1,0 +1,38 @@
+cabal-version:      2.4
+name:               JustValidatorsV2
+version:            0.1.0.0
+synopsis:           JustValidators bootsrap cabal project
+homepage:           https://www.vortecsla.com/plutus
+license:            MIT
+license-file:       LICENSE
+author:             Roberto J. Cerrud
+maintainer:         vortecsmaster@vortecsla.com
+category:           Education
+extra-source-files: CHANGELOG.md
+
+library
+    exposed-modules:    AlwaysSucceedandFailV2
+                      , JustRedeemerV2
+                      , TypedValidatorV2
+                      , CustomTypedValidatorV2
+    build-depends:      base ^>=4.14.1.0
+                      , aeson -any
+                      , bytestring -any
+                      , containers -any
+                      , data-default 
+                      , freer-extras -any
+                      , playground-common -any
+                      , plutus-contract -any
+                      , plutus-ledger -any
+                      , plutus-ledger-api -any
+                      , plutus-ledger-constraints -any
+                      , plutus-script-utils
+                      , plutus-tx -any
+                      , plutus-tx-plugin -any
+                      , text -any
+                      , lens -any
+                      , serialise
+    hs-source-dirs:   src
+    default-language: Haskell2010
+
+    ghc-options:         -Wall -fobject-code -fno-ignore-interface-pragmas -fno-omit-interface-pragmas -fno-strictness -fno-spec-constr -fno-specialise

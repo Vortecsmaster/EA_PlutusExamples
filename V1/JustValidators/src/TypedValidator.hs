@@ -7,7 +7,7 @@
 {-# LANGUAGE TypeFamilies        #-}
 {-# LANGUAGE TypeOperators       #-}
 
-module OurGift where
+module TypedValidator where
 
 import           Control.Monad       hiding (fmap)
 import           Data.Map            as Map

@@ -7,7 +7,7 @@
 {-# LANGUAGE TypeFamilies        #-}
 {-# LANGUAGE TypeOperators       #-}
 
-module OurGoodRedeemer where
+module JustRedeemer2 where
 
 import           Control.Monad       hiding (fmap)
 import           Data.Map            as Map
