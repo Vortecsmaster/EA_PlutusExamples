@@ -21,3 +21,4 @@ cabal.project.local
 cabal.project.local~
 .HTF/
 .ghc.environment.*
+/V1/JustValidators/dist-newstyle/cache/up-to-date

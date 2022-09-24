@@ -99,8 +99,7 @@ endpoints = awaitPromise (give' `select` grab') >> endpoints                    
 
 -- Playground broken at the moment - September 2022
 -- mkSchemaDefinitions ''GiftSchema                                                                     -- Generate the Schema for the playground
--- mkKnownCurrencies []                                                                                 -- MakeKnown currencies for the playground to have some ADA available
-
+-- mkKnownCurrencies [] 
 
 --SIMULATION
 
