@@ -61,7 +61,7 @@ valHash = Scripts.validatorHash validator
 
 scrAddress :: V1Address.Address
 scrAddress = V1Address.scriptHashAddress valHash          -- Couldn't find a new version of scriptAddress for unTyped Scripts
---replaces:
+--replaces
 --scrAddress = scriptAddress validator 
 
 
