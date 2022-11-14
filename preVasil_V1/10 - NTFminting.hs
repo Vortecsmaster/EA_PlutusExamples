@@ -95,8 +95,9 @@ endpoints = mint' >> endpoints
     mint' = awaitPromise $ endpoint @"mint" mint
 
 mkSchemaDefinitions ''NFTSchema
-
 mkKnownCurrencies []
+
+--SIMULATION
 
 test :: IO ()
 test = runEmulatorTraceIO $ do

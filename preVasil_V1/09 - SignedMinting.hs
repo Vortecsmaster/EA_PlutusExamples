@@ -82,12 +82,12 @@ test = runEmulatorTraceIO $ do
        h1 <- activateContractWallet (knownWallet 1) endpoints
        h2 <- activateContractWallet (knownWallet 2) endpoints
        callEndpoint @"mint" h1 $ MintParams
-                        { mpTokenName = "YourBatchcoin" 
+                        { mpTokenName = "EMAcoin" 
                         , mpAmout     = 1100
                         }
        void $ Emulator.waitNSlots 10
        callEndpoint @"mint" h2 $ MintParams
-                        { mpTokenName = "YourBatchcoin2"
+                        { mpTokenName = "EMAcoin2"
                         , mpAmout     = 2200   
                         }
        void $ Emulator.waitNSlots 10

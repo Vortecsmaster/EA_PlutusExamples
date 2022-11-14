@@ -3,10 +3,11 @@ name:               JustValidators
 version:            0.1.0.0
 synopsis:           JustValidators bootsrap cabal project
 homepage:
+license:            MIT
 license-file:       LICENSE
 author:             Roberto J. Cerrud
 maintainer:         vortecsmaster@vortecsla.com
-category:           Concurrency
+category:           Education
 extra-source-files: CHANGELOG.md
 
 library

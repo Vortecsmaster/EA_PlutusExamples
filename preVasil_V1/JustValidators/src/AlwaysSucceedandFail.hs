@@ -9,47 +9,50 @@
 
 module AlwaysSucceedandFail where
 
-import           Control.Monad       hiding (fmap)
-import           Data.Map            as Map
-import           Data.Text           (Text)
-import           Data.Void           (Void)
-import           Plutus.Contract
+--On Chain PlutusCore related
 import           PlutusTx            (Data (..))
 import qualified PlutusTx
 import qualified PlutusTx.Builtins   as Builtins
 import           PlutusTx.Prelude    hiding (Semigroup(..), unless)
+--Ledger Types, Fn and Typeclaes related
 import           Ledger              hiding (singleton)
 import           Ledger.Constraints  as Constraints
 import qualified Ledger.Scripts      as Scripts               -- Low Level Typed Validator 
 import           Ledger.Ada          as Ada
+--Plutus Off-Chain related - Contract Monad and Playground
+import           Plutus.Contract
 import           Playground.Contract (printJson, printSchemas, ensureKnownCurrencies, stage)
 import           Playground.TH       (mkKnownCurrencies, mkSchemaDefinitions)
 import           Playground.Types    (KnownCurrency (..))
-import           Prelude             (IO, Semigroup (..), String)
 import           Text.Printf         (printf)
+--Haskell related
+import           Prelude             (IO, Semigroup (..), String)
+import           Control.Monad       hiding (fmap)
+import           Data.Map            as Map
+import           Data.Text           (Text)
+import           Data.Void           (Void)
 
-{-# OPTIONS_GHC -fno-warn-unused-imports #-}
+--ON-CHAIN RELATED CODE
 
---THE ON-CHAIN CODE
-
-{-# INLINABLE alwaysSucceeds #-} -- Everything that its supposed to run in on-chain code need this pragma
-alwaysSucceeds :: BuiltinData -> BuiltinData -> BuiltinData -> ()   -- the value of this function is on its sideeffects
-alwaysSucceeds _ _ _ = () --AlwaysSucceed
+{-# INLINABLE alwaysSucceeds #-}
+alwaysSucceeds :: BuiltinData -> BuiltinData -> BuiltinData -> ()
+alwaysSucceeds _ _ _ = ()
 
 {-# INLINABLE alwaysFails #-}
 alwaysFails :: BuiltinData -> BuiltinData -> BuiltinData -> ()   
 alwaysFails _ _ _ = error () --you can also change this to traceError "BURNT!"
 
 validator :: Validator
-validator = mkValidatorScript $$(PlutusTx.compile [|| alwaysSucceeds ||])  --2nd example change this to alwaysFails
+validator = mkValidatorScript $$(PlutusTx.compile [|| alwaysSucceeds ||])
 
 valHash :: Ledger.ValidatorHash
-valHash = Scripts.validatorHash validator  -- The hash of the validator
+valHash = Scripts.validatorHash validator  -- The hash of the validators
 
-scrAddress :: Ledger.Address
-scrAddress = scriptAddress validator --You apply scriptAddress to the validator and you get the script address on the blockchain
+scrAddress :: Address
+scrAddress = scriptAddress validator 
 
---THE OFFCHAIN CODE
+
+--THE OFFCHAIN RELATED CODE
 
 type GiftSchema =
             Endpoint "give" Integer  --An Integer Parameter
@@ -82,5 +85,4 @@ endpoints = awaitPromise (give' `select` grab') >> endpoints                    
     grab' = endpoint @"grab" $ const grab                                                            -- block until grab
 
 mkSchemaDefinitions ''GiftSchema                                                                     -- Generate the Schema for that
-
-mkKnownCurrencies []                                                                                 -- MakeKnown currencies for the playground to have some ADA available
+mkKnownCurrencies []                                                                                 -- MakeKnown currencies for the
