@@ -7,6 +7,7 @@ module Deploy
     , writeUnit
     , writeDatum
     , writeRedeemer
+    , badRedeemer
     , writeBountyValidator
     ) where
 
@@ -39,10 +40,13 @@ writeUnit :: IO ()
 writeUnit = writeJSON "testnet/unit.json" ()
 
 writeDatum :: IO ()
-writeDatum = writeJSON "testnet/datum.json" (MBD 100 1664541629000)
+writeDatum = writeJSON "testnet/datum.json" (MBD 100)
 
 writeRedeemer :: IO ()
 writeRedeemer = writeJSON "testnet/goodRedeemer.json" (10::Integer)
+
+writeBadRedeemer :: IO ()
+writeBadRedeemer = writeJSON "testnet/badRedeemer.json" (7::Integer)
 
 writeBountyValidator :: IO (Either (FileError ()) ())
 writeBountyValidator = writeValidator "testnet/mathBounty.plutus" $ validator

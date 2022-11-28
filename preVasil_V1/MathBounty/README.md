@@ -14,23 +14,19 @@ What do we need?
 * Validator Script (Serialized and JSON encoded)
 * Datum (JSON encoded)
 * Redeemer (JSON encoded)
-  
 
 
 ## Part 2 Serializing and encoding 
+
 ###### STEP 1
-
-    git clone https://github.com/Vortecsmaster/MathBountyTestnet.git
-
-###### STEP 2
     Run your NIX-SHELL
 
-###### STEP 3
+###### STEP 2
 In the your MathBountyTestnet folder execute 
 
     cabal repl
 
-###### STEP 4
+###### STEP 3
 On the REPL, Evaluate the functions on the Deploy module
 
     writeUnit
@@ -41,6 +37,7 @@ On the REPL, Evaluate the functions on the Deploy module
 
 This is going to create the corresponding encoded/serialized files for unit, datum, goodRedeeer, badRedeemer and mathBounty.plutus
 
+###### STEP 3
 
 
  **Fund the payment address with 10000 Test Ada from the Faucet (https://testnets.cardano.org/en/testnets/cardano/tools/faucet/)**
