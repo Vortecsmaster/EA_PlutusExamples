@@ -23,7 +23,7 @@ import qualified Ledger.Address                 as V1Address
 import           Ledger.Constraints             as Constraints              -- Same library name, different functions for V1 and V2 in some cases
 --import qualified Ledger.Typed.Scripts         as Scripts              
 import qualified Plutus.Script.Utils.V2.Typed.Scripts as Scripts            -- New library name for Typed Validators and some new fuctions
-import qualified Plutus.V2.Ledger.Api                 as PlutusV2           -- 
+import qualified Plutus.V2.Ledger.Api                 as PlutusV2            
 import           Ledger.Ada                     as Ada
 --Trace Emulator
 import           Plutus.Trace
