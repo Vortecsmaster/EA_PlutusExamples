@@ -8,7 +8,7 @@
 {-# LANGUAGE TypeOperators       #-}
 {-# LANGUAGE OverloadedStrings   #-}
 
-module ShowingmakeIsDataIndexed where
+module RequestLoan where
 
 --PlutusTx 
 import           PlutusTx                       (Data (..))
@@ -45,10 +45,6 @@ import qualified Plutus.V1.Ledger.Api                 as PlutusV1
 {-# OPTIONS_GHC -fno-warn-unused-imports #-}
 
 --THE ON-CHAIN CODE
-
--- newtype MyWonderfullRedeemer = MWR Integer
-
--- PlutusTx.makeIsDataIndexed ''MyWonderfullRedeemer [('MWR,0)]        -- At compile time write an instance of this data type (MyWonderFullRedeemer) on the IsData typeclass
 
 newtype MyWonderfullRedeemer = MWR Integer
 PlutusTx.unstableMakeIsData ''MyWonderfullRedeemer

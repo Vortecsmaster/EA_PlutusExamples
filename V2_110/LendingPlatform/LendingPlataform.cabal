@@ -1,17 +1,17 @@
 cabal-version:      2.4
-name:               JustValidatorsV2
+name:               Lending P2P Platform
 version:            1.1.0.0
-synopsis:           JustValidators bootsrap cabal project
+synopsis:           Lending P2P Platform demo contracts
 homepage:           https://www.vortecsla.com/plutus
 license:            MIT
 license-file:       LICENSE
 author:             Roberto J. Cerrud
-maintainer:         vortecsmaster@vortecsla.com
+maintainer:         roberto@emurgo.io
 category:           Education
 extra-source-files: CHANGELOG.md
 
 library
-    exposed-modules:    AlwaysSucceedandFailV2o 
+    exposed-modules:    RequestLoan 
     build-depends:      base ^>=4.14.1.0
                       , aeson -any
                       , bytestring -any

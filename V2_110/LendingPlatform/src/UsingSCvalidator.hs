@@ -7,6 +7,8 @@
 {-# LANGUAGE TypeFamilies        #-}
 {-# LANGUAGE TypeOperators       #-}
 {-# LANGUAGE OverloadedStrings   #-}
+{-# LANGUAGE DeriveAnyClass      #-}
+
 
 module UsingSCvalidator where
 
@@ -23,9 +25,11 @@ import           Ledger.Constraints             as Constraints              -- S
 --import qualified Ledger.Typed.Scripts         as Scripts
 import           Ledger.Typed.Scripts           as UScripts
 import           Ledger.Typed.Scripts.Validators
+import           Plutus.V2.Ledger.Contexts      as LedgerV2
 import qualified Plutus.Script.Utils.V2.Typed.Scripts as Scripts            -- New library name for Typed Validators and some new fuctions
 import qualified Plutus.V2.Ledger.Api                 as PlutusV2            
 import           Ledger.Ada                     as Ada
+import           Ledger
 --import for Serialization
 import           Cardano.Api                          (PlutusScript, PlutusScriptV2, writeFileTextEnvelope)
 import           Cardano.Api.Shelley                  (PlutusScript (..),
@@ -46,30 +50,56 @@ import qualified Plutus.V1.Ledger.Api                 as PlutusV1
 
 --THE ON-CHAIN CODE
 
--- newtype MyWonderfullRedeemer = MWR Integer
+data TokenUser = Borrower | Lender | DaBot deriving Eq
 
--- PlutusTx.makeIsDataIndexed ''MyWonderfullRedeemer [('MWR,0)]        -- At compile time write an instance of this data type (MyWonderFullRedeemer) on the IsData typeclass
+data LoanActions = RequestLoan | CancelLoan deriving Eq
 
-newtype MyWonderfullRedeemer = MWR Integer
-PlutusTx.unstableMakeIsData ''MyWonderfullRedeemer
+data LoanBond = LB { borrower :: PubKeyHash
+                   , request  :: Ledger.Value
+                   , duration :: POSIXTime
+                   , collateral :: Ledger.Value
+                   }
 
-data MyWonderfullDatum = MWDn Integer | MWDb BuiltinByteString | MWDan Integer  
-PlutusTx.makeIsDataIndexed ''MyWonderfullDatum [('MWDn,0),('MWDb,1),('MWDan,2)]
+PlutusTx.unstableMakeIsData ''TokenUser
+PlutusTx.unstableMakeIsData ''LoanActions
+PlutusTx.unstableMakeIsData ''LoanBond
 
 
-{-# INLINABLE typedRedeemer #-} 
-typedRedeemer :: MyWonderfullDatum -> MyWonderfullRedeemer -> PlutusV2.ScriptContext -> Bool   
-typedRedeemer datum (MWR redeemer) _ = traceIfFalse "Wrong redeemer!" (redeemer == 19)
+{-# INLINABLE userToken #-} 
+userToken :: TokenUser -> PlutusV2.ScriptContext -> Bool
+userToken _ _ = True
+
+
+{-# INLINABLE loanRequest #-} 
+loanRequest :: LoanBond -> LoanActions -> PlutusV2.ScriptContext -> Bool   
+loanRequest datum action sContext 
+  | action == RequestLoan      = requestLoan 
+  | action == CancelLoan       = cancelLoan  
+  | otherwise                  = False
+  where
+
+    info :: LedgerV2.TxInfo
+    info = LedgerV2.scriptContextTxInfo sContext
+
+    timeoutReached :: Bool
+    timeoutReached = contains (from $ duration datum) (LedgerV2.txInfoValidRange info)   
  
+    requestLoan :: Bool
+    requestLoan = timeoutReached  
+
+    cancelLoan :: Bool
+    cancelLoan = if (length (txInfoOutputs info) == 1) then (pubKeyHashAddress $ borrower datum) == txOutAddress $ head ((txInfoOutputs info))
+
+
 
 data Typed                                                          -- New type that encode the information about the Datum and the Redeemer
 instance Scripts.ValidatorTypes Typed where
-     type instance RedeemerType Typed = MyWonderfullRedeemer
-     type instance DatumType Typed = MyWonderfullDatum
+     type instance RedeemerType Typed = LoanActions
+     type instance DatumType Typed = LoanBond
    
 typedValidator :: Scripts.TypedValidator Typed
 typedValidator = Scripts.mkTypedValidator @Typed
-    $$(PlutusTx.compile [|| typedRedeemer ||]) 
+    $$(PlutusTx.compile [|| loanRequest ||]) 
     $$(PlutusTx.compile [|| wrap ||])                               
   where
     wrap = UScripts.mkUntypedValidator  --New wrapper function for typed validators             
@@ -95,17 +125,17 @@ scriptSBS = SBS.toShort . LBS.toStrict $ serialise validator
 serialisedScript :: PlutusScript PlutusScriptV2
 serialisedScript = PlutusScriptSerialised scriptSBS
 
-writeTr19 :: IO ()
-writeTr19 = void $ writeFileTextEnvelope "./testnet/TypedRedeemer19.plutus" Nothing serialisedScript
+writeRL :: IO ()
+writeRL = void $ writeFileTextEnvelope "./testnet/RequestLoan.plutus" Nothing serialisedScript
 
 writeJSON :: PlutusTx.ToData a => FilePath -> a -> IO ()
 writeJSON file = LBS.writeFile file . A.encode . scriptDataToJson ScriptDataJsonDetailedSchema . fromPlutusData . PlutusV1.toData
 
-writeRedeemer :: IO ()
-writeRedeemer = writeJSON "./testnet/ty19.json" (MWR 19)
+writeRedeemerRL :: IO ()
+writeRedeemerRL = writeJSON "./testnet/requestLoan.json" RequestLoan
 
-writeDatum :: IO ()
-writeDatum = writeJSON "./testnet/mwd20.json" (MWDan 20)
+-- writeDatum :: IO ()
+-- writeDatum = writeJSON "./testnet/mwd20.json" (MWDan 20)
 
 
 writeUnit :: IO ()

@@ -7,6 +7,8 @@
 {-# LANGUAGE TypeFamilies        #-}
 {-# LANGUAGE TypeOperators       #-}
 {-# LANGUAGE OverloadedStrings   #-}
+{-# LANGUAGE DeriveAnyClass      #-}
+
 
 module UsingSCvalidator where
 
@@ -23,6 +25,7 @@ import           Ledger.Constraints             as Constraints              -- S
 --import qualified Ledger.Typed.Scripts         as Scripts
 import           Ledger.Typed.Scripts           as UScripts
 import           Ledger.Typed.Scripts.Validators
+import           Plutus.V2.Ledger.Contexts      as LedgerV2
 import qualified Plutus.Script.Utils.V2.Typed.Scripts as Scripts            -- New library name for Typed Validators and some new fuctions
 import qualified Plutus.V2.Ledger.Api                 as PlutusV2            
 import           Ledger.Ada                     as Ada
@@ -47,7 +50,9 @@ import qualified Plutus.V1.Ledger.Api                 as PlutusV1
 
 --THE ON-CHAIN CODE
 
-data Actions = RequestLoan | CancelLoan
+data TokenUser = Borrower | Lender | DaBot deriving Eq
+
+data LoanActions = RequestLoan | CancelLoan deriving Eq
 
 data LoanBond = LB { borrower :: PubKeyHash
                    , request  :: Ledger.Value
@@ -55,33 +60,46 @@ data LoanBond = LB { borrower :: PubKeyHash
                    , collateral :: Ledger.Value
                    }
 
+PlutusTx.unstableMakeIsData ''TokenUser
+PlutusTx.unstableMakeIsData ''LoanActions
+PlutusTx.unstableMakeIsData ''LoanBond
+
+
+{-# INLINABLE userToken #-} 
+userToken :: TokenUser -> PlutusV2.ScriptContext -> Bool
+userToken _ _ = True
+
+
 {-# INLINABLE loanRequest #-} 
-loanRequest :: LoanBond -> Actions -> PlutusV2.ScriptContext -> Bool   
+loanRequest :: LoanBond -> LoanActions -> PlutusV2.ScriptContext -> Bool   
 loanRequest datum action sContext 
-  | action == RequestLoan      = requestLoan
+  | action == RequestLoan      = requestLoan 
   | action == CancelLoan       = cancelLoan  
   | otherwise                  = False
   where
 
-    info :: TxInfo
-    info = scriptContextTxInfo sContext
+    info :: LedgerV2.TxInfo
+    info = LedgerV2.scriptContextTxInfo sContext
 
     timeoutReached :: Bool
-    timeoutReached = contains (from $ duration datum) (txInfoValidRange info)   
+    timeoutReached = contains (from $ duration datum) (LedgerV2.txInfoValidRange info)   
  
     requestLoan :: Bool
-    requestLoan = True
+    requestLoan = timeoutReached  
+
     cancelLoan :: Bool
-    cancelLoan = True
+    cancelLoan = if (length (txInfoOutputs info) == 1) then (pubKeyHashAddress $ borrower datum) == txOutAddress $ head ((txInfoOutputs info))
+
+
 
 data Typed                                                          -- New type that encode the information about the Datum and the Redeemer
 instance Scripts.ValidatorTypes Typed where
-     type instance RedeemerType Typed = Actions
+     type instance RedeemerType Typed = LoanActions
      type instance DatumType Typed = LoanBond
    
 typedValidator :: Scripts.TypedValidator Typed
 typedValidator = Scripts.mkTypedValidator @Typed
-    $$(PlutusTx.compile [|| typedRedeemer ||]) 
+    $$(PlutusTx.compile [|| loanRequest ||]) 
     $$(PlutusTx.compile [|| wrap ||])                               
   where
     wrap = UScripts.mkUntypedValidator  --New wrapper function for typed validators             
@@ -114,7 +132,7 @@ writeJSON :: PlutusTx.ToData a => FilePath -> a -> IO ()
 writeJSON file = LBS.writeFile file . A.encode . scriptDataToJson ScriptDataJsonDetailedSchema . fromPlutusData . PlutusV1.toData
 
 writeRedeemerRL :: IO ()
-writeRedeemerRL = writeJSON "./testnet/requestLoan.json" (RequestLoan)
+writeRedeemerRL = writeJSON "./testnet/requestLoan.json" RequestLoan
 
 -- writeDatum :: IO ()
 -- writeDatum = writeJSON "./testnet/mwd20.json" (MWDan 20)
