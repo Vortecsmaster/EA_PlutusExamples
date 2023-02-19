@@ -1,5 +1,4 @@
-# Revision history for MathBounty
-
+# Revision history for Lending Platform
 ## 0.1.0.0 -- YYYY-mm-dd
 
 * First version. Released on an unsuspecting world.
