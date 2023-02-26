@@ -1,6 +1,6 @@
-utxoin="a6800bc5e30bfc555a39425b68c15d052c99310867099eda32ef14f915558ae8#0"
-address=$(cat AS.addr) 
-output="100000000"
+utxoin="38956583c3fb800ffbaa8e8d6b2adfb26a19806ca72cf47d10bd1b72223ecb04#1"
+address=$(cat typedDvR.addr) 
+output="1000000000"
 
 
 cardano-cli transaction build \
@@ -8,8 +8,8 @@ cardano-cli transaction build \
   $PREVIEW \
   --tx-in $utxoin \
   --tx-out $address+$output \
-  --tx-out-datum-hash-file unit.json \
-  --change-address $nami \
+  --tx-out-datum-hash-file td19.json \
+  --change-address $Adr01 \
   --protocol-params-file protocol.params \
   --out-file give.unsigned
 

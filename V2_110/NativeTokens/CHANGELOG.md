@@ -1,4 +1,4 @@
-# Revision history for Lending Platform
+# Revision history for NativeTokens
 ## 0.1.0.0 -- YYYY-mm-dd
 
 * First version. Released on an unsuspecting world.

@@ -53,13 +53,17 @@ import qualified Plutus.V1.Ledger.Api                 as PlutusV1
 newtype MyWonderfullRedeemer = MWR Integer
 PlutusTx.unstableMakeIsData ''MyWonderfullRedeemer
 
-data MyWonderfullDatum = MWDn Integer | MWDb BuiltinByteString | MWDan Integer  
-PlutusTx.makeIsDataIndexed ''MyWonderfullDatum [('MWDn,0),('MWDb,1),('MWDan,2)]
+data MyWonderfullDatum = MWDb BuiltinByteString | MWDan Integer | MWDn Integer| 
+PlutusTx.makeIsDataIndexed ''MyWonderfullDatum [('MWDb,0),('MWDan,1),('MWDn,2)]
 
 
 {-# INLINABLE typedRedeemer #-} 
 typedRedeemer :: MyWonderfullDatum -> MyWonderfullRedeemer -> PlutusV2.ScriptContext -> Bool   
 typedRedeemer datum (MWR redeemer) _ = traceIfFalse "Wrong redeemer!" (redeemer == 19)
+
+{-# INLINABLE typedDvR #-} 
+typedRedeemer :: MyWonderfullDatum -> MyWonderfullRedeemer -> PlutusV2.ScriptContext -> Bool   
+typedRedeemer (MWDn datum) (MWR redeemer) _ = traceIfFalse "Wrong redeemer!" (redeemer == datum)
  
 
 data Typed                                                          -- New type that encode the information about the Datum and the Redeemer

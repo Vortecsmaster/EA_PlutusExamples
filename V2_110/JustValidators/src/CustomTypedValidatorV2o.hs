@@ -46,8 +46,8 @@ import qualified Plutus.V1.Ledger.Api                 as PlutusV1
 
 --THE ON-CHAIN CODE
 
--- data MyWonderfullDatum = MWDn Integer | MWDb BuiltinByteString | MWDan Integer  
--- PlutusTx.makeIsDataIndexed ''MyWonderfullDatum [('MWDn,0),('MWDb,1),('MWDan,2)]
+data MyWonderfullDatum = MWDn Integer | MWDb Integer | MWDan BuiltinByteString 
+PlutusTx.makeIsDataIndexed ''MyWonderfullDatum [('MWDn,0),('MWDb,1),('MWDan,2)]
 
 newtype MyWonderfullRedeemer = MWR Integer
 PlutusTx.unstableMakeIsData ''MyWonderfullRedeemer
@@ -55,17 +55,20 @@ PlutusTx.unstableMakeIsData ''MyWonderfullRedeemer
 
 {-# INLINABLE typedRedeemer #-} 
 typedRedeemer :: () -> MyWonderfullRedeemer -> PlutusV2.ScriptContext -> Bool   
-typedRedeemer () (MWR redeemer) _ = traceIfFalse "Wrong redeemer!" (redeemer == 19)
- 
+typedRedeemer () (MWR redeemer) _ = traceIfFalse "Not the right redeemer"  (redeemer == 19)
+
+{-# INLINABLE typedDvR #-} 
+typedDvR :: MyWonderfullDatum -> MyWonderfullRedeemer -> PlutusV2.ScriptContext -> Bool   
+typedDvR (MWDn number) (MWR redeemer) _ = traceIfFalse "Datum number not equal redeemer" (number == redeemer)
 
 data Typed                                                          -- New type that encode the information about the Datum and the Redeemer
 instance Scripts.ValidatorTypes Typed where
      type instance RedeemerType Typed = MyWonderfullRedeemer
-     type instance DatumType Typed = ()
+     type instance DatumType Typed = MyWonderfullDatum
    
 typedValidator :: Scripts.TypedValidator Typed
 typedValidator = Scripts.mkTypedValidator @Typed
-    $$(PlutusTx.compile [|| typedRedeemer ||]) 
+    $$(PlutusTx.compile [|| typedDvR ||]) 
     $$(PlutusTx.compile [|| wrap ||])                               
   where
     wrap = UScripts.mkUntypedValidator    --New wrapper function for typed validators             
@@ -92,13 +95,16 @@ serialisedScript :: PlutusScript PlutusScriptV2
 serialisedScript = PlutusScriptSerialised scriptSBS
 
 writeTr19 :: IO ()
-writeTr19 = void $ writeFileTextEnvelope "./testnet/TypedRedeemer19.plutus" Nothing serialisedScript
+writeTr19 = void $ writeFileTextEnvelope "./testnet/typedDvR.plutus" Nothing serialisedScript
 
 writeJSON :: PlutusTx.ToData a => FilePath -> a -> IO ()
 writeJSON file = LBS.writeFile file . A.encode . scriptDataToJson ScriptDataJsonDetailedSchema . fromPlutusData . PlutusV1.toData
 
 writeRedeemer :: IO ()
-writeRedeemer = writeJSON "./testnet/ty19.json" (MWR 19)
+writeRedeemer = writeJSON "./testnet/tr19.json" (MWR 19)
+
+writeDatum :: IO ()
+writeDatum = writeJSON "./testnet/td19.json" (MWDn 19)
 
 writeUnit :: IO ()
 writeUnit = writeJSON "./testnet/unit.json" ()

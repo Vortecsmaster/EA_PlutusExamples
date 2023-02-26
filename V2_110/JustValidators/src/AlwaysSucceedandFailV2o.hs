@@ -99,8 +99,6 @@ scriptSBS1 = SBS.toShort . LBS.toStrict $ serialise validator1
 scriptSBS2 :: SBS.ShortByteString
 scriptSBS2 = SBS.toShort . LBS.toStrict $ serialise validator2
 
-
-
 {- As a Serialised Script -}
 
 serialisedScript :: PlutusScript PlutusScriptV2
@@ -126,3 +124,6 @@ writeJSON file = LBS.writeFile file . A.encode . scriptDataToJson ScriptDataJson
 
 writeUnit :: IO ()
 writeUnit = writeJSON "./testnet/unit.json" ()
+
+write19 :: IO ()
+write19 = writeJSON "./testnet/value19.json" (19 :: Integer)
