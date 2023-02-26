@@ -6,7 +6,7 @@ homepage:           https://www.vortecsla.com/plutus
 license:            MIT
 license-file:       LICENSE
 author:             Roberto J. Cerrud
-maintainer:         roberto@emurgo.io
+maintainer:         roberto.cerrud@vortecsla.com
 category:           Education
 extra-source-files: CHANGELOG.md
 

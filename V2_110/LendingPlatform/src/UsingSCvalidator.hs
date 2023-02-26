@@ -22,7 +22,6 @@ import           PlutusTx.Prelude               hiding (Semigroup(..), unless, (
 import           Ledger                         hiding (singleton)
 import qualified Ledger.Address                 as V1Address
 import           Ledger.Constraints             as Constraints              -- Same library name, different functions for V1 and V2 in some cases
---import qualified Ledger.Typed.Scripts         as Scripts
 import           Ledger.Typed.Scripts           as UScripts
 import           Ledger.Typed.Scripts.Validators
 import           Plutus.V2.Ledger.Contexts      as LedgerV2
@@ -51,9 +50,7 @@ import qualified Plutus.V1.Ledger.Api                 as PlutusV1
 --THE ON-CHAIN CODE
 
 data TokenUser = Borrower | Lender | DaBot deriving Eq
-
 data LoanActions = RequestLoan | CancelLoan deriving Eq
-
 data LoanBond = LB { borrower :: PubKeyHash
                    , request  :: Ledger.Value
                    , duration :: POSIXTime
