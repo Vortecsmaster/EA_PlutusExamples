@@ -14,7 +14,7 @@
 {-# LANGUAGE TypeOperators         #-}
 
 
-module EmurgoAtoken where
+module EAtokens where
 
 --PlutusTx 
 import           PlutusTx                               (Data (..))
@@ -43,15 +43,15 @@ import           Data.Functor                           (void)
 
 --THE ON-CHAIN CODE
 
-{-# INLINABLE mintingPolicy #-}
-mintingPolicy ::  BuiltinData -> BuiltinData -> ()
-mintingPolicy _ _ = ()
+{-# INLINABLE asPolicy #-}
+asPolicy ::  BuiltinData -> BuiltinData -> ()
+asPolicy _ _ = ()
 
-{-# INLINABLE mpr42 #-}
-mpr42 ::  BuiltinData -> BuiltinData -> ()
-mpr42 r _ = if r == (Builtins.mkI 42) 
+{-# INLINABLE r42Policy #-}
+r42Policy ::  BuiltinData -> BuiltinData -> ()
+r42Policy r _ = if r == (Builtins.mkI 42) 
                     then () 
-                    else ( error ())
+                    else (error ())
 
 {-# INLINABLE rightAssetMP #-}
 rightAssetMP ::  Value.AssetClass -> LedgerV2.ScriptContext -> Bool
@@ -87,3 +87,4 @@ rightAssetMP asset sContext = traceIfFalse "Asset not available" findedAsset
 
     showTN :: (CurrencySymbol, TokenName, Integer) -> TokenName
     showTN ( _, tn, _ ) = tn
+

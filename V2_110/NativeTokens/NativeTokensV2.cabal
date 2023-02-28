@@ -11,7 +11,7 @@ category:           Education
 extra-source-files: CHANGELOG.md
 
 library
-    exposed-modules:    EmurgoAtoken
+    exposed-modules:    EAtokens, EAnft
     build-depends:      base ^>=4.14.1.0
                       , aeson -any
                       , bytestring -any

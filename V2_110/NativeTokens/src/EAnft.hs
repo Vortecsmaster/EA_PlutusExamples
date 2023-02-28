@@ -14,12 +14,12 @@
 {-# LANGUAGE TypeOperators         #-}
 
 
-module EmurgoAtoken 
+module EAnft 
   ( printRedeemer,
     serialisedScript,
     scriptSBS,
     script,
-    writeSerialisedScript,
+    createTokenSc,
   )
 where
 
@@ -31,19 +31,28 @@ import           PlutusTx.Prelude                       hiding (Semigroup(..), u
            
 --Ledger 
 import           Ledger                                 hiding (singleton)
+import           Ledger.Typed.Scripts                   as MPScripts
 import           Plutus.V1.Ledger.Address               as V1Address
 import           Plutus.V1.Ledger.Api                   as PlutusV1
 import           Plutus.V2.Ledger.Api                   as PlutusV2
+import           Plutus.V2.Ledger.Contexts              as PlutusV2
 import           Ledger.Constraints                     as Constraints              
-import qualified Plutus.Script.Utils.V2.Typed.Scripts   as Scripts                  
+import           Plutus.Script.Utils.V2.Typed.Scripts   as Scripts
 import           Ledger.Ada                             as Ada 
 import           Ledger.Value                           as Value
---"Normal" Haskell -}
+--"Normal" Haskell for serialization -}
 import           Prelude                                (IO, Semigroup (..), Show (..), print, (.))
 import           Data.Aeson                             as A
 import qualified Data.ByteString.Lazy                   as LBS
 import qualified Data.ByteString.Short                  as SBS
 import           Data.Functor                           (void)
+import           Codec.Serialise
+import           Cardano.Api                          (writeFileTextEnvelope)
+import           Cardano.Api.Shelley                  (PlutusScript (..),
+                                                       PlutusScriptV2,
+                                                       ScriptDataJsonSchema (ScriptDataJsonDetailedSchema),
+                                                       fromPlutusData,
+                                                       scriptDataToJson)
 
 {-# OPTIONS_GHC -fno-warn-unused-imports #-}
 
@@ -61,7 +70,7 @@ PlutusTx.unstableMakeIsData ''NFTParams
 
 redeemer :: NFTParams
 redeemer = NFTParams { mpAmount = 1,
-                       mpTxOutRef = PlutusV2.TxOutRef {txOutRefId = "612f766282d47b091e3c7372405a3728d752e918ea79251db456d367bbac5ddb"
+                       mpTxOutRef = PlutusV2.TxOutRef {txOutRefId = "3367d2774baf8a4a9318e7c87070e5ac970623d4a0f0d6d1bc54058085021396"
                      , txOutRefIdx = 0}
                      }
 
@@ -81,7 +90,7 @@ mkPolicy p _ ctx = traceIfFalse "UTxO not consumed"   hasUTxO           &&
 
     checkNFTAmount :: Bool
     checkNFTAmount = case Value.flattenValue (PlutusV2.txInfoMint info) of
-       [(cs, tn', amt)] -> cs  == ownCurrencySymbol ctx && amt == 1
+       [(cs, tn', amt)] -> cs  == PlutusV2.ownCurrencySymbol ctx && amt == 1
        _                -> False
 
 {- Compile into UPLC-}
@@ -92,11 +101,11 @@ policy mp = PlutusV2.mkMintingPolicyScript $
     `PlutusTx.applyCode`
      PlutusTx.liftCode mp
   where
-    wrap mp' = Scripts.mkUntypedMintingPolicy $ mkPolicy mp'
+    wrap mp' = MPScripts.mkUntypedMintingPolicy $ mkPolicy mp'
 
 {- As a Script -}
 
-script :: PlutusV2.Script
+script :: PlutusV2.Script 
 script = PlutusV2.unMintingPolicyScript $ policy redeemer
 
 {- As a Short Byte String -}
@@ -109,5 +118,5 @@ scriptSBS = SBS.toShort . LBS.toStrict $ serialise script
 serialisedScript :: PlutusScript PlutusScriptV2
 serialisedScript = PlutusScriptSerialised scriptSBS
 
-writeSerialisedScript :: IO ()
-writeSerialisedScript = void $ writeFileTextEnvelope "testnet/EAtokenV2.plutus" Nothing serialisedScript
+createTokenSc :: IO ()
+createTokenSc = void $ writeFileTextEnvelope "testnet/EAtokenV2.plutus" Nothing serialisedScript
