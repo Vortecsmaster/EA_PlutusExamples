@@ -70,7 +70,7 @@ PlutusTx.unstableMakeIsData ''NFTParams
 
 redeemer :: NFTParams
 redeemer = NFTParams { mpAmount = 1,
-                       mpTxOutRef = PlutusV2.TxOutRef {txOutRefId = "5650b787354207b4824fb6136acf5446924f7cbd1907df10d70e60c37ecb4d2e"
+                       mpTxOutRef = PlutusV2.TxOutRef {txOutRefId = "72c4aecbbd337f98ac21009725e68a93a19d8800d814239953f1da9dfff470d7"
                      , txOutRefIdx = 0}
                      }
 
