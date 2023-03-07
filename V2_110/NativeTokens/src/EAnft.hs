@@ -70,7 +70,7 @@ PlutusTx.unstableMakeIsData ''NFTParams
 
 redeemer :: NFTParams
 redeemer = NFTParams { mpAmount = 1,
-                       mpTxOutRef = PlutusV2.TxOutRef {txOutRefId = "3367d2774baf8a4a9318e7c87070e5ac970623d4a0f0d6d1bc54058085021396"
+                       mpTxOutRef = PlutusV2.TxOutRef {txOutRefId = "5650b787354207b4824fb6136acf5446924f7cbd1907df10d70e60c37ecb4d2e"
                      , txOutRefIdx = 0}
                      }
 
@@ -119,4 +119,4 @@ serialisedScript :: PlutusScript PlutusScriptV2
 serialisedScript = PlutusScriptSerialised scriptSBS
 
 createTokenSc :: IO ()
-createTokenSc = void $ writeFileTextEnvelope "testnet/EAtokenV2.plutus" Nothing serialisedScript
+createTokenSc = void $ writeFileTextEnvelope "testnet/EAnftV2.plutus" Nothing serialisedScript
