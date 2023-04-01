@@ -22,32 +22,32 @@ index-state:
 packages: ./.
   
 -- Plutus apps revision from v1.1.0
-source-repository-package
-  type: git
-  location: https://github.com/input-output-hk/plutus-apps.git
-  subdir:
-    cardano-node-emulator
-    cardano-streaming
-    doc
-    freer-extras
-    marconi
-    marconi-mamba
-    playground-common
-    pab-blockfrost
-    plutus-chain-index
-    plutus-chain-index-core
-    plutus-contract
-    plutus-contract-certification
-    plutus-example
-    plutus-ledger
-    plutus-ledger-constraints
-    plutus-pab
-    plutus-pab-executables
-    plutus-script-utils
-    plutus-tx-constraints
-    plutus-use-cases
-    rewindable-index
-  tag: v1.1.0
+-- source-repository-package
+--  type: git
+--  location: https://github.com/input-output-hk/plutus-apps.git
+--  subdir:
+--    cardano-node-emulator
+--    cardano-streaming
+--    doc
+--    freer-extras
+--    marconi
+--    marconi-mamba
+--    playground-common
+--    pab-blockfrost
+--    plutus-chain-index
+--    plutus-chain-index-core
+--    plutus-contract
+--    plutus-contract-certification
+--    plutus-example
+--    plutus-ledger
+--    plutus-ledger-constraints
+--    plutus-pab
+--    plutus-pab-executables
+--    plutus-script-utils
+--    plutus-tx-constraints
+--    plutus-use-cases
+--    rewindable-index
+--  tag: v1.1.0
 
 -- We never, ever, want this.
 write-ghc-environment-files: never
