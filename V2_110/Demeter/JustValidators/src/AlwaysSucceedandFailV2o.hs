@@ -7,7 +7,7 @@
 {-# LANGUAGE TypeFamilies        #-}  --Allow use and definition of indexed type and data families
 {-# LANGUAGE TypeOperators       #-}  --Allow the use and definition of types with operator names
 
-module AlwaysSucceedandFailV2o where
+module AlwaysSucceedandFail where
 
 --PlutusTx 
 import           PlutusTx                       (Data (..))
