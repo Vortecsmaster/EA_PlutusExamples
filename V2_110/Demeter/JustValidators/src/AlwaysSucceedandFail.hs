@@ -30,7 +30,7 @@ import           Cardano.Api.Shelley                  (PlutusScript (..),
                                                        ScriptDataJsonSchema (ScriptDataJsonDetailedSchema),
                                                        fromPlutusData,
                                                        scriptDataToJson)
-import          Codec.Serialise          
+import           Codec.Serialise          
 import           Data.Aeson                           as A
 import qualified Data.ByteString.Lazy                 as LBS
 import qualified Data.ByteString.Short                as SBS

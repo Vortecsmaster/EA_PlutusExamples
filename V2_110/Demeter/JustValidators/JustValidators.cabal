@@ -1,5 +1,5 @@
-cabal-version:      2.4
-name:               JustValidatorsV2
+cabal-version:      3.1
+name:               JustValidators
 version:            1.1.0.0
 synopsis:           JustValidators bootsrap cabal project
 homepage:           https://www.vortecsla.com/plutus
