@@ -10,6 +10,8 @@ import                  PlutusTx.Prelude            (error, otherwise,(==),Bool)
 import qualified        Plutus.V2.Ledger.Api        as PlutusV2
 import                  Serialise                   (writeValidatorToFile, writeDataToFile)
 
+import                  Prelude                     (IO)
+
 
 {-# INLINABLE alwaysSucceeds #-}
 alwaysSucceeds :: BuiltinData -> BuiltinData -> BuiltinData -> ()
@@ -58,4 +60,4 @@ dvsR2validator = PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| dvsR2 ||])
 ------------------------------------- SERIALIZE THE CONTRACT --------------------------------------------
 
 saveVal :: IO ()
-saveVal = writeValidatorToFile "./assets/gift.plutus" validator
+saveVal = writeValidatorToFile  "./testnet/DvR.plutus" dvsR2validator
