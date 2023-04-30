@@ -12,7 +12,6 @@ import                  Serialise                   (writeValidatorToFile, write
 
 import                  Prelude                     (IO)
 
-
 {-# INLINABLE alwaysSucceeds #-}
 alwaysSucceeds :: BuiltinData -> BuiltinData -> BuiltinData -> ()
 alwaysSucceeds _ _ _ = ()
@@ -55,9 +54,8 @@ dvsR2 datum redeemer _
 dvsR2validator :: PlutusV2.Validator
 dvsR2validator = PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| dvsR2 ||])
 
-
 ---------------------------------------------------------------------------------------------------
 ------------------------------------- SERIALIZE THE CONTRACT --------------------------------------------
 
 saveVal :: IO ()
-saveVal = writeValidatorToFile  "./testnet/DvR.plutus" dvsR2validator
+saveVal = writeValidatorToFile "./testnet/DvR.plutus" dvsR2validator
