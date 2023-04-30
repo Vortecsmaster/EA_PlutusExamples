@@ -46,12 +46,11 @@ import qualified Plutus.V1.Ledger.Api                 as PlutusV1
 
 --THE ON-CHAIN CODE
 
-data MyWonderfullDatum = MWDn Integer | MWDb Integer | MWDan BuiltinByteString 
-PlutusTx.makeIsDataIndexed ''MyWonderfullDatum [('MWDn,0),('MWDb,1),('MWDan,2)]
+data MyWonderfullDatum =  MWDan BuiltinByteString | MWDb Integer | MWDn Integer 
+PlutusTx.makeIsDataIndexed ''MyWonderfullDatum [('MWDb,0),('MWDan,1),('MWDn,2)]     -- MWDn Integer -> Constr 2 {I Integer}
 
 newtype MyWonderfullRedeemer = MWR Integer
-PlutusTx.unstableMakeIsData ''MyWonderfullRedeemer
-
+PlutusTx.unstableMakeIsData ''MyWonderfullRedeemer  -- MWR Integer -> Constr 0 {I Integer}  
 
 {-# INLINABLE typedRedeemer #-} 
 typedRedeemer :: () -> MyWonderfullRedeemer -> PlutusV2.ScriptContext -> Bool   
@@ -71,7 +70,7 @@ typedValidator = Scripts.mkTypedValidator @Typed
     $$(PlutusTx.compile [|| typedDvR ||]) 
     $$(PlutusTx.compile [|| wrap ||])                               
   where
-    wrap = UScripts.mkUntypedValidator    --New wrapper function for typed validators             
+    wrap = UScripts.mkUntypedValidator    --New wrapper function for typed validators to map them into BuiltinData -> BuiltinData -> BuiltinData -> ()            
     
 
 validator :: Validator
