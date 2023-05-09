@@ -20,6 +20,8 @@ index-state:
 packages: Utils
           FromScratch
           JustValidators
+          NativeTokens
+          SomeGames
 
 -- We never, ever, want this.
 write-ghc-environment-files: never
