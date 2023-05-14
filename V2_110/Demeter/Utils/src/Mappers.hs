@@ -6,9 +6,15 @@ module Mappers
   , wrapStakeValidator
   ) where
 
-import           Plutus.V2.Ledger.Api (ScriptContext, UnsafeFromData,
-                                       unsafeFromBuiltinData)
+import           Plutus.V2.Ledger.Api (CurrencySymbol (CurrencySymbol)
+                                      , ScriptContext
+                                      , UnsafeFromData
+                                      , unsafeFromBuiltinData)
 import           PlutusTx.Prelude     (Bool, BuiltinData, check, ($))
+import qualified Cardano.Api                 as Api
+import           Cardano.Api.Shelley         (Address (..))
+import qualified Cardano.Api.Shelley         as Api
+import           Cardano.Crypto.Hash.Class   (hashToBytes)
 
 {-# INLINABLE wrapValidator #-}
 wrapValidator :: ( UnsafeFromData a
@@ -36,3 +42,6 @@ wrapStakeValidator :: UnsafeFromData a
                      => (a -> ScriptContext -> Bool)
                      -> (BuiltinData -> BuiltinData -> ())
 wrapStakeValidator = wrapPolicy  
+
+currencySymbol :: MintingPolicy -> CurrencySymbol
+currencySymbol = CurrencySymbol . BuiltinByteString . Api.serialiseToRawBytes . hashScript . policyToScript
