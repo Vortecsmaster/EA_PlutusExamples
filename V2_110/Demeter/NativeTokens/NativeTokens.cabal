@@ -10,7 +10,7 @@ build-type:         Simple
 extra-doc-files:    CHANGELOG.md
 
 library
-    exposed-modules:  FungilbleTokens, EAnft
+    exposed-modules:  FungibleTokens, EAnft
     build-depends:    aeson
                     , base ^>=4.14.3.0
                     , bytestring
@@ -19,7 +19,7 @@ library
                     , plutus-tx-plugin
                     , plutus-ledger-api
                     , serialise
-                    , utils
+                    , Utils
                     
     hs-source-dirs:   src
     default-language: Haskell2010

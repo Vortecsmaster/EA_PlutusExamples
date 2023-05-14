@@ -18,7 +18,8 @@ library
                     , plutus-tx
                     , plutus-tx-plugin
                     , plutus-ledger-api
-                    , serialise
+                    , serialiseç
+                    , Utils
                     
     hs-source-dirs:   src
     default-language: Haskell2010

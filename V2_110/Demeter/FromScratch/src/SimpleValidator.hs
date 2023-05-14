@@ -8,7 +8,7 @@ import                  PlutusTx                    (BuiltinData, compile)
 import                  PlutusTx.Builtins           as Builtins (mkI)
 import                  PlutusTx.Prelude            (error, otherwise,(==),Bool)
 import qualified        Plutus.V2.Ledger.Api        as PlutusV2
-import                  Serialise                   (writeValidatorToFile, writeDataToFile)
+import                  Utils                   (writeValidatorToFile, writeDataToFile)
 
 import                  Prelude                     (IO)
 
