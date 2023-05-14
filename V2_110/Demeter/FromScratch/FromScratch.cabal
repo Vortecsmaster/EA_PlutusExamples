@@ -18,7 +18,7 @@ library
                     , plutus-tx
                     , plutus-tx-plugin
                     , plutus-ledger-api
-                    , serialiseç
+                    , serialise
                     , Utils
                     
     hs-source-dirs:   src
