@@ -7,6 +7,11 @@ module Mappers
   ) where
 
 import           Plutus.V2.Ledger.Api (CurrencySymbol (CurrencySymbol)
+                                      , MintingPolicy
+                                      , MintingPolicyHash (MintingPolicyHash)
+                                      , POSIXTime
+                                      , Validator
+                                      , ValidatorHash (ValidatorHash)
                                       , ScriptContext
                                       , UnsafeFromData
                                       , unsafeFromBuiltinData)
