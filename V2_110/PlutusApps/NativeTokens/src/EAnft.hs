@@ -59,22 +59,18 @@ import           Cardano.Api.Shelley                  (PlutusScript (..),
 --THE ON-CHAIN CODE
 
 data NFTParams = NFTParams --  doesn't need more than the TxOutRef
-    { --mpTokenName :: !Plutus.TokenName
-      mpAmount   :: !Integer
-    , mpTxOutRef :: !PlutusV2.TxOutRef
-    --, mpPubKeyHs  :: !Plutus.PubKeyHash
+    { mpTxOutRef :: !PlutusV2.TxOutRef
     } deriving Show
 
 PlutusTx.makeLift ''NFTParams
 PlutusTx.unstableMakeIsData ''NFTParams
 
-redeemer :: NFTParams
-redeemer = NFTParams { mpAmount = 1,
-                       mpTxOutRef = PlutusV2.TxOutRef {txOutRefId = "72c4aecbbd337f98ac21009725e68a93a19d8800d814239953f1da9dfff470d7"
-                     , txOutRefIdx = 0}
-                     }
+parameter :: NFTParams
+parameter  = NFTParams { mpTxOutRef = PlutusV2.TxOutRef { txOutRefId = "8dfbc683114a903264cfe7b66c7b2935f3afbbfdcfabda3ba0fe2ecb80869d07"
+                                                        , txOutRefIdx = 0}
+                       }
 
-printRedeemer = print $ "Redeemer: " <> A.encode (scriptDataToJson ScriptDataJsonDetailedSchema $ fromPlutusData $ PlutusV2.toData redeemer)
+printRedeemer = print $ "Parameter: " <> A.encode (scriptDataToJson ScriptDataJsonDetailedSchema $ fromPlutusData $ PlutusV2.toData parameter)
 
 {-# INLINABLE mkPolicy #-}
 mkPolicy :: NFTParams -> BuiltinData -> PlutusV2.ScriptContext -> Bool
@@ -93,6 +89,34 @@ mkPolicy p _ ctx = traceIfFalse "UTxO not consumed"   hasUTxO           &&
        [(cs, tn', amt)] -> cs  == PlutusV2.ownCurrencySymbol ctx && amt == 1
        _                -> False
 
+{-# INLINABLE mkCompletePolicy #-}
+mkCompletePolicy :: NFTParams -> Bool -> PlutusV2.ScriptContext -> Bool
+mkCompletePolicy p minttx ctx = if minttx then minting else burning
+  where
+    minting :: Bool
+    minting =  traceIfFalse "UTxO not consumed"   hasUTxO           &&
+               traceIfFalse "wrong amount minted" checkNFTAmount
+
+    burning :: Bool
+    burning =  traceIfFalse "wrong amount to burn" checkburnNFTAmount
+
+    info :: PlutusV2.TxInfo
+    info = PlutusV2.scriptContextTxInfo ctx
+
+    hasUTxO :: Bool
+    hasUTxO = any (\i -> PlutusV2.txInInfoOutRef i == mpTxOutRef p) $ PlutusV2.txInfoInputs info
+
+    checkNFTAmount :: Bool
+    checkNFTAmount = case Value.flattenValue (PlutusV2.txInfoMint info) of
+       [(_, _, amt)]    -> amt == 1
+       _                -> False
+
+    checkburnNFTAmount :: Bool
+    checkburnNFTAmount = case Value.flattenValue (PlutusV2.txInfoMint info) of
+      [(_, _, amt)]    -> amt == -1
+      _                -> False
+
+
 {- Compile into UPLC-}
 
 policy :: NFTParams -> Scripts.MintingPolicy
@@ -101,12 +125,12 @@ policy mp = PlutusV2.mkMintingPolicyScript $
     `PlutusTx.applyCode`
      PlutusTx.liftCode mp
   where
-    wrap mp' = MPScripts.mkUntypedMintingPolicy $ mkPolicy mp'
+    wrap mp' = MPScripts.mkUntypedMintingPolicy $ mkCompletePolicy mp'
 
 {- As a Script -}
 
 script :: PlutusV2.Script 
-script = PlutusV2.unMintingPolicyScript $ policy redeemer
+script = PlutusV2.unMintingPolicyScript $ policy parameter
 
 {- As a Short Byte String -}
 
@@ -119,4 +143,4 @@ serialisedScript :: PlutusScript PlutusScriptV2
 serialisedScript = PlutusScriptSerialised scriptSBS
 
 createTokenSc :: IO ()
-createTokenSc = void $ writeFileTextEnvelope "testnet/EAnftV2.plutus" Nothing serialisedScript
+createTokenSc = void $ writeFileTextEnvelope "testnet/EAnftV3.plutus" Nothing serialisedScript
