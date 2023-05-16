@@ -8,7 +8,7 @@ module Mappers
 
 import           PlutusTx
 import           PlutusTx.Prelude            (Bool, BuiltinData, check, ($),(.))
-import           Plutus.V1.Ledger.Api        (BuiltinByteString (..))
+import           Plutus.V1.Ledger.Api        (BuiltinByteString)
 import           Plutus.V2.Ledger.Api        (CurrencySymbol (CurrencySymbol)
                                              , MintingPolicy
                                              , MintingPolicyHash (MintingPolicyHash)
