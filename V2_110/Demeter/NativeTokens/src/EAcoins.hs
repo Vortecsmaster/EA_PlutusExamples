@@ -2,7 +2,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell   #-}
 
-module FungibleTokens where
+module EAcoins where
 
 import qualified PlutusTx
 import           PlutusTx.Prelude     (Bool (True))
@@ -14,21 +14,18 @@ import           Prelude              (IO)
 import           Utils            (currencySymbol, wrapPolicy,
                                        writePolicyToFile)
 
-{-# INLINABLE asPolicy #-}
-asPolicy :: () -> ScriptContext -> Bool
-asPolicy () _ = True
+{-# INLINABLE eaCoins #-}
+eaCoins :: Action -> ScriptContext -> Bool
+eaCoins action sContext = True
 
 {-# INLINABLE mkWrappedFreePolicy #-}
-mkWrappedFreePolicy :: BuiltinData -> BuiltinData -> ()
-mkWrappedFreePolicy = wrapPolicy asPolicy
+mkWrappedEAcoinsPolicy :: BuiltinData -> BuiltinData -> ()
+mkWrappedEAcoinsPolicy = wrapPolicy eaCoins
 
-freePolicy :: MintingPolicy
-freePolicy = mkMintingPolicyScript $$(PlutusTx.compile [|| mkWrappedFreePolicy ||])
+eaCoinsPolicy :: MintingPolicy
+eaCoinsPolicy = mkMintingPolicyScript $$(PlutusTx.compile [|| mkWrappedEAcoinsPolicy ||])
 
----------------------------------------------------------------------------------------------------
-------------------------------------- HELPER FUNCTIONS --------------------------------------------
+--SERIALIZATION INTO 
 
 saveFreePolicy :: IO ()
-saveFreePolicy = writePolicyToFile "testnet/as.policy" freePolicy
-
-freeCurrencySymbol :: CurrencySymbol
+saveFreePolicy = writePolicyToFile "testnet/EAcoins.plutus" freePolicy
