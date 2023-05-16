@@ -23,7 +23,7 @@ import qualified Cardano.Api                 as Api
 import           Cardano.Api.Shelley         (Address (..),hashScript)
 import qualified Cardano.Api.Shelley         as Api
 import           Cardano.Crypto.Hash.Class   (hashToBytes)
-import           Serialise                   (policyToScript, validatorToScript)
+import           Serialization                   (policyToScript, validatorToScript)
 
 {-# INLINABLE wrapValidator #-}
 wrapValidator :: ( UnsafeFromData a
