@@ -1,6 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 
-module Serialise
+module Serialization
   ( validatorToScript
   , policyToScript
   , codeToScript
