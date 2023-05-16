@@ -17,7 +17,7 @@ import           Plutus.V2.Ledger.Api        (CurrencySymbol (CurrencySymbol)
                                              , unsafeFromBuiltinData)
 import           PlutusTx.Prelude            (Bool, BuiltinData, check, ($))
 import qualified Cardano.Api                 as Api
-import           Cardano.Api.Shelley         (Address (..))
+import           Cardano.Api.Shelley         (Address (..),hashScript)
 import qualified Cardano.Api.Shelley         as Api
 import           Cardano.Crypto.Hash.Class   (hashToBytes)
 import           Serialise                   (policyToScript, validatorToScript)
