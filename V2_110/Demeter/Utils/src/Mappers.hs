@@ -20,7 +20,7 @@ import           Plutus.V2.Ledger.Api        (CurrencySymbol (CurrencySymbol)
                                              , UnsafeFromData
                                              , unsafeFromBuiltinData)
 import qualified Cardano.Api                 as Api
-import           Cardano.Api.Shelley         (Address (..),hashScript)
+import           Cardano.Api.Shelley         (Address (..))
 import qualified Cardano.Api.Shelley         as Api
 import           Cardano.Crypto.Hash.Class   (hashToBytes)
 import           Serialization                   (policyToScript, validatorToScript)
@@ -52,5 +52,3 @@ wrapStakeValidator :: UnsafeFromData a
                      -> (BuiltinData -> BuiltinData -> ())
 wrapStakeValidator = wrapPolicy  
 
-currencySymbol :: MintingPolicy -> CurrencySymbol
-currencySymbol = CurrencySymbol . BuiltinByteString . Api.serialiseToRawBytes . hashScript . policyToScript

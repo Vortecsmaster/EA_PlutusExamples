@@ -10,8 +10,10 @@ module Serialization
   , dataToJSON
   , printDataToJSON
   , writeDataToFile
+  , currencySymbol
   ) where
 
+import qualified Cardano.Api                 as Api
 import           Cardano.Api           (Error (displayError), PlutusScript,
                                         PlutusScriptV2, prettyPrintJSON,
                                         writeFileJSON, writeFileTextEnvelope)
@@ -24,9 +26,24 @@ import qualified Data.ByteString.Lazy  as BSL
 import qualified Data.ByteString.Short as BSS
 import           Plutus.V1.Ledger.Api  (ToData)
 import qualified Plutus.V2.Ledger.Api  as PlutusV2
+import           Plutus.V2.Ledger.Api  (CurrencySymbol (CurrencySymbol)
+                                       , MintingPolicy
+                                       , MintingPolicyHash (MintingPolicyHash)
+                                       , POSIXTime
+                                       , Validator
+                                       , ValidatorHash (ValidatorHash)
+                                       , ScriptContext
+                                       , UnsafeFromData
+                                       , unsafeFromBuiltinData)
 import           PlutusTx              (CompiledCode)
+import           PlutusTx.Builtins.Internal  (BuiltinByteString (..))
 import           Text.Printf           (printf)
 
+currencySymbol :: MintingPolicy -> CurrencySymbol
+currencySymbol = PlutusV2.CurrencySymbol . BuiltinByteString . Api.serialiseToRawBytes . hashScript . policyToScript
+
+hashScript :: Api.PlutusScript Api.PlutusScriptV2 -> Api.ScriptHash
+hashScript = Api.hashScript . Api.PlutusScript Api.PlutusScriptV2
 
 serializableToScript :: Serialise a => a -> PlutusScript PlutusScriptV2
 serializableToScript = PlutusScriptSerialised . BSS.toShort . BSL.toStrict . serialise
