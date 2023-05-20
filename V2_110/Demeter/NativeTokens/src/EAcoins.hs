@@ -11,7 +11,7 @@ import           Plutus.V2.Ledger.Api (BuiltinData, CurrencySymbol,
                                        mkMintingPolicyScript)
 
 import           Prelude              (IO)
-import           Utils            (currencySymbol, wrapPolicy,
+import           Utilities           (currencySymbol, wrapPolicy,
                                        writePolicyToFile)
 
 {-# INLINABLE eaCoins #-}
