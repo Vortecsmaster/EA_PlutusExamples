@@ -11,21 +11,21 @@ import           Plutus.V2.Ledger.Api (BuiltinData, CurrencySymbol,
                                        mkMintingPolicyScript)
 
 import           Prelude              (IO)
-import           Utilities           (currencySymbol, wrapPolicy,
-                                       writePolicyToFile)
+import           Mappers          (wrapPolicy)
+import           Serialization    (currencySymbol, writePolicyToFile) 
 
-{-# INLINABLE eaCoins #-}
-eaCoins :: Action -> ScriptContext -> Bool
-eaCoins action sContext = True
+-- {-# INLINABLE eaCoins #-}
+-- eaCoins :: Action -> ScriptContext -> Bool
+-- eaCoins action sContext = True
 
-{-# INLINABLE mkWrappedFreePolicy #-}
-mkWrappedEAcoinsPolicy :: BuiltinData -> BuiltinData -> ()
-mkWrappedEAcoinsPolicy = wrapPolicy eaCoins
+-- {-# INLINABLE mkWrappedFreePolicy #-}
+-- mkWrappedEAcoinsPolicy :: BuiltinData -> BuiltinData -> ()
+-- mkWrappedEAcoinsPolicy = wrapPolicy eaCoins
 
-eaCoinsPolicy :: MintingPolicy
-eaCoinsPolicy = mkMintingPolicyScript $$(PlutusTx.compile [|| mkWrappedEAcoinsPolicy ||])
+-- eaCoinsPolicy :: MintingPolicy
+-- eaCoinsPolicy = mkMintingPolicyScript $$(PlutusTx.compile [|| mkWrappedEAcoinsPolicy ||])
 
---SERIALIZATION INTO 
+-- --SERIALIZATION INTO 
 
-saveFreePolicy :: IO ()
-saveFreePolicy = writePolicyToFile "testnet/EAcoins.plutus" freePolicy
+-- saveFreePolicy :: IO ()
+-- saveFreePolicy = writePolicyToFile "testnet/EAcoins.plutus" freePolicy
