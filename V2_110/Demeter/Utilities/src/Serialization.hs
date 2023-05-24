@@ -79,6 +79,8 @@ writeValidatorToFile filePath = writeScriptToFile filePath . validatorToScript
 writePolicyToFile :: FilePath -> PlutusV2.MintingPolicy -> IO ()
 writePolicyToFile filePath = writeScriptToFile filePath . policyToScript
 
+
+-- Write data to file in Cardano API readable format (DATA)
 dataToJSON :: ToData a => a -> Value
 dataToJSON = scriptDataToJsonDetailedSchema . fromPlutusData . PlutusV2.toData
 
