@@ -1,47 +1,19 @@
 {-# LANGUAGE DataKinds           #-}  --Enable datatype promotions
-{-# LANGUAGE FlexibleContexts    #-}  --Enable flexible contexts. Implied by ImplicitParams
 {-# LANGUAGE NoImplicitPrelude   #-}  --Don't load native prelude to avoid conflict with PlutusTx.Prelude
-{-# LANGUAGE ScopedTypeVariables #-}  --Enable lexical scoping of type variables explicit introduced with forall
 {-# LANGUAGE TemplateHaskell     #-}  --Enable Template Haskell splice and quotation syntax
-{-# LANGUAGE TypeApplications    #-}  --Allow the use of type application syntax
-{-# LANGUAGE TypeFamilies        #-}  --Allow use and definition of indexed type and data families
-{-# LANGUAGE TypeOperators       #-}  --Allow the use and definition of types with operator names
 
 module AlwaysSucceedandFail where
 
 --PlutusTx 
-import           PlutusTx                       (Data (..))
-import qualified PlutusTx
-import qualified PlutusTx.Builtins              as Builtins
-import           PlutusTx.Prelude               hiding (Semigroup(..), unless, (.))
---Contract Monad
-import           Plutus.Contract               
---Ledger 
-import           Ledger                         hiding (singleton)
-import           Plutus.V1.Ledger.Address       as V1Address
---import qualified Ledger.Address                 as V1Address
-import           Ledger.Constraints             as Constraints              -- Same library name, different functions for V1 and V2 in some cases
---import qualified Ledger.Scripts               as Scripts               
-import qualified Plutus.Script.Utils.V2.Scripts as Scripts                  -- New library name for Typed Validators and some new fuctions
-import           Ledger.Ada                     as Ada 
---import for Serialization
-import           Cardano.Api                          (PlutusScript, PlutusScriptV2, writeFileTextEnvelope)
-import           Cardano.Api.Shelley                  (PlutusScript (..),
-                                                       ScriptDataJsonSchema (ScriptDataJsonDetailedSchema),
-                                                       fromPlutusData,
-                                                       scriptDataToJson)
-import           Codec.Serialise          
-import           Data.Aeson                           as A
-import qualified Data.ByteString.Lazy                 as LBS
-import qualified Data.ByteString.Short                as SBS
-import           Data.Functor                         (void)
-import           Prelude                              (FilePath, IO, Semigroup (..), Show (..), print, (.))
-import qualified Plutus.V1.Ledger.Api                 as PlutusV1
+import                  PlutusTx                       (BuiltinData, compile)
+import                  PlutusTx.Builtins              as Builtins (mkI)
+import                  PlutusTx.Prelude               (error, otherwise, (==), Bool (..), Integer)
+import                  Plutus.V2.Ledger.Api        as PlutusV2
+import                  Serialization    (writeValidatorToFile, writeDataToFile)
 
-{-# OPTIONS_GHC -fno-warn-unused-imports #-}
-
+import                  Prelude                     (IO)
+ 
 --THE ON-CHAIN CODE
-
 
 {-# INLINABLE alwaysSucceeds #-}                                    -- Everything that its supposed to run in on-chain code need this pragma
 alwaysSucceeds :: BuiltinData -> BuiltinData -> BuiltinData -> ()   -- the value of this function is on its sideeffects
@@ -51,79 +23,58 @@ alwaysSucceeds _ _ _ = ()
 alwaysFails :: BuiltinData -> BuiltinData -> BuiltinData -> ()   
 alwaysFails _ _ _ = error () 
 
-
-{-# INLINABLE aTest #-}
-aTest :: BuiltinData -> BuiltinData -> BuiltinData -> ()
-aTest datum  redeemer _ 
- | datum == redeemer   = ()
+{-# INLINABLE redeemer11 #-}
+redeemer11 :: BuiltinData -> BuiltinData -> BuiltinData -> ()
+redeemer11 _ redeemer _ 
+ | redeemer == mkI 11  = ()
  | otherwise           = error ()
 
-validator :: Validator
-validator = mkValidatorScript $$(PlutusTx.compile [|| alwaysSucceeds ||])  
-
-valHash :: Ledger.ValidatorHash
-valHash = Scripts.validatorHash validator  
-
-scrAddress :: V1Address.Address
-scrAddress = V1Address.scriptHashAddress valHash          -- Couldn't find a new version of scriptAddress for unTyped Scripts
---replaces:
---scrAddress = scriptAddress validator 
-
-validator1 :: Validator
-validator1 = mkValidatorScript $$(PlutusTx.compile [|| alwaysFails ||])  
-
-valHash1 :: Ledger.ValidatorHash
-valHash1= Scripts.validatorHash validator1 
-
-scrAddress1 :: V1Address.Address
-scrAddress1 = V1Address.scriptHashAddress valHash1  
-
-validator2 :: Validator
-validator2 = mkValidatorScript $$(PlutusTx.compile [|| aTest ||])  
-
-valHash2 :: Ledger.ValidatorHash
-valHash2 = Scripts.validatorHash validator2  
-
-scrAddress2 :: V1Address.Address
-scrAddress2 = V1Address.scriptHashAddress valHash2          -- Couldn't find a new version of scriptAddress for unTyped Scripts
+{-# INLINABLE datum22 #-}
+datum22 :: BuiltinData -> BuiltinData -> BuiltinData -> ()
+datum22 datum _ _ 
+ | datum == mkI 22     = ()
+ | otherwise           = error ()
 
 
-{- As a Short Byte String -}
+alwaysSucceedsValidator :: Validator
+alwaysSucceedsValidator = mkValidatorScript $$(PlutusTx.compile [|| alwaysSucceeds ||])  
 
-scriptSBS :: SBS.ShortByteString
-scriptSBS = SBS.toShort . LBS.toStrict $ serialise validator
+alwaysFailsValidator :: Validator
+alwaysFailsValidator = mkValidatorScript $$(PlutusTx.compile [|| alwaysFails ||])  
 
-scriptSBS1 :: SBS.ShortByteString
-scriptSBS1 = SBS.toShort . LBS.toStrict $ serialise validator1
+redeemer11Validator :: Validator
+redeemer11Validator = mkValidatorScript $$(PlutusTx.compile [|| redeemer11 ||])  
 
-scriptSBS2 :: SBS.ShortByteString
-scriptSBS2 = SBS.toShort . LBS.toStrict $ serialise validator2
+datum22Validator :: Validator
+datum22Validator = mkValidatorScript $$(PlutusTx.compile [|| datum22 ||])  
 
-{- As a Serialised Script -}
 
-serialisedScript :: PlutusScript PlutusScriptV2
-serialisedScript = PlutusScriptSerialised scriptSBS
+{- Serialised Script and Values-}
 
-writeAS :: IO ()
-writeAS = void $ writeFileTextEnvelope "./testnet/AS.plutus" Nothing serialisedScript
+saveAlwaysSucceeds :: IO ()
+saveAlwaysSucceeds =  writeValidatorToFile "./testnet/alwaysSucceeds.plutus" alwaysSucceedsValidator
 
-serialisedScript1 :: PlutusScript PlutusScriptV2
-serialisedScript1 = PlutusScriptSerialised scriptSBS1
+saveAlwaysFails :: IO ()
+saveAlwaysFails =  writeValidatorToFile "./testnet/alwaysFails.plutus" alwaysFailsValidator
 
-writeAF :: IO ()
-writeAF = void $ writeFileTextEnvelope "./testnet/AF.plutus" Nothing serialisedScript1
+saveRedeemer11 :: IO ()
+saveRedeemer11 =  writeValidatorToFile "./testnet/redeemer11.plutus" redeemer11Validator
 
-serialisedScript2 :: PlutusScript PlutusScriptV2
-serialisedScript2 = PlutusScriptSerialised scriptSBS2
+saveDatum22 :: IO ()
+saveDatum22 =  writeValidatorToFile "./testnet/datum22.plutus" datum22Validator
 
-writeDvR :: IO ()
-writeDvR = void $ writeFileTextEnvelope "./testnet/DvR.plutus" Nothing serialisedScript2
+saveUnit :: IO ()
+saveUnit = writeDataToFile "./testnet/unit.json" ()
 
-writeJSON :: PlutusTx.ToData a => FilePath -> a -> IO ()
-writeJSON file = LBS.writeFile file . A.encode . scriptDataToJson ScriptDataJsonDetailedSchema . fromPlutusData . PlutusV1.toData
+saveTrue :: IO ()
+saveTrue = writeDataToFile "./testnet/True.json" True
 
-writeUnit :: IO ()
-writeUnit = writeJSON "./testnet/unit.json" ()
+saveFalse :: IO ()
+saveFalse = writeDataToFile "./testnet/False.json" False
 
-write19 :: IO ()
-write19 = writeJSON "./testnet/value19.json" (19 :: Integer)
+saveValue11 :: IO ()
+saveValue11 = writeDataToFile "./testnet/value11.json" (11 :: Integer)
+
+saveValue22 :: IO ()
+saveValue22 = writeDataToFile "./testnet/value22.json" (22 :: Integer)
+

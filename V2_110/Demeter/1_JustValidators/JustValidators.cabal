@@ -23,6 +23,7 @@ library
                       , plutus-tx-plugin -any
                       , text -any
                       , serialise
+                      , Utilities
     hs-source-dirs:   src
     default-language: Haskell2010
 
