@@ -8,7 +8,7 @@ import                  PlutusTx                    (BuiltinData, compile)
 import                  PlutusTx.Builtins           as Builtins (mkI)
 import                  PlutusTx.Prelude            (error, otherwise,(==),Bool)
 import qualified        Plutus.V2.Ledger.Api        as PlutusV2
-import                  Serialise                   (writeValidatorToFile, writeDataToFile)
+import                  Utils                   (writeValidatorToFile, writeDataToFile)
 
 import                  Prelude                     (IO)
 
@@ -47,7 +47,7 @@ dvsRvalidator = PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| dvsR ||])
 dvsR2 ::  BuiltinData -> BuiltinData -> BuiltinData -> ()
 dvsR2 datum redeemer _ 
  | datum == redeemer                = ()
- | datum == Builtins.mkI 19         = ()
+ | datum == Builtins.mkI 11         = ()
  | redeemer ==  Builtins.mkI 22    = ()
  | otherwise                        = error ()
 --to have an error message (on a different script / scriptAddress, you can use traceError function)
