@@ -55,7 +55,7 @@ dvsR2 datum redeemer _
 dvsR2validator :: PlutusV2.Validator
 dvsR2validator = PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| dvsR2 ||])
 
----------------------------------------------------------------------------------------------------
+
 ------------------------------------- SERIALIZE THE CONTRACT --------------------------------------------
 
 saveVal :: IO ()
