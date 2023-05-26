@@ -1,10 +1,9 @@
 # Plutus Developer Environments
 
 We have 3 options for developer environments:
+    * Demeter.run Plutus Stack
     * Local Developer Environment based on Plutus Application Framework
     * Docker Developer Environment based on IOH Plutus Pionneers Program Cohort 4 resources
-    * Demeter.run Plutus Stack
-
 
 
 1. Open a Demeter.run account.
@@ -31,7 +30,17 @@ We have 3 options for developer environments:
 ######_Wait for priviosioning..._
 
 4. Open VSCode
-5. 
+5. Navigate to folder 1_JustValidators and open a terminal or viceversa.
+6. Test
+``` 
+        cabal update
+        cabal repl
+```
+
+You should see the very nice prompt of the REPL
+
+_Prelude AlwaysSucceedandFail>_
+
 
 
 This guide was last tested with Ubuntu 22.04.2 LTS, other versions and platforms might not be exactly the same.
@@ -119,9 +128,16 @@ Execute
         cabal update
 ```
 
+9. Clone Emurgo Academy Plutus Examples repository
+``` 
+        git clone https://github.com/Vortecsmaster/EmurgoAcademyPlutusExamples.git
+```
+10. Quick test
+
+
 <!--
 ## NOW INSTALL AND RUN THE PLUTUS PLAYGROUND
-9. In the same window change the directory by executing
+1. In the same window change the directory by executing
 
 ```
         cd plutus-playground-server
