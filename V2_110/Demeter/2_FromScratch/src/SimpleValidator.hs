@@ -6,57 +6,42 @@ module SimpleValidator where
 
 import                  PlutusTx                    (BuiltinData, compile)
 import                  PlutusTx.Builtins           as Builtins (mkI)
-import                  PlutusTx.Prelude            (error, otherwise,(==),Bool)
+import                  PlutusTx.Prelude            (error, otherwise,(==))
 import qualified        Plutus.V2.Ledger.Api        as PlutusV2
-import                  Mappers          (wrapPolicy)
-import                  Serialization    (currencySymbol, writePolicyToFile)
+import                  Serialization    (writeValidatorToFile)
 
-import                  Prelude                     (IO)
+import                  Prelude                     (IO, Integer, putStr)
 
-{-# INLINABLE alwaysSucceeds #-}
-alwaysSucceeds :: BuiltinData -> BuiltinData -> BuiltinData -> ()
-alwaysSucceeds _ _ _ = ()
-
-{-# INLINABLE alwaysFails #-}
-alwaysFails :: BuiltinData -> BuiltinData -> BuiltinData -> ()
-alwaysFails _ _ _ = error ()
-
-validator :: PlutusV2.Validator
-validator = PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| alwaysSucceeds ||])
-
--- {-# INLINABLE withTypes #-}
--- withTypes ::  Integer -> String -> PlutusV2.ScriptContext -> Bool
--- withTypes _ _ _ = True
-
-{-
-  fun :: Integer -> String -> PlutusV2.ScriptContext -> Bool  =>  wrapedfun :: BuiltinData -> BuiltinData -> BuiltinData -> ()
- (String) Text -> BuiltinString  (encodeUtf8 :: BuiltinString -> BuiltinByteString) -> (B ByteString)
--}
-
-
-
-{-# INLINABLE dvsR #-}
-dvsR ::  BuiltinData -> BuiltinData -> BuiltinData -> ()
-dvsR datum redeemer _ 
+{-# INLINABLE datumVsRedeemer #-}
+datumVsRedeemer ::  BuiltinData -> BuiltinData -> BuiltinData -> ()
+datumVsRedeemer datum redeemer _ 
  | datum == redeemer                = ()
  | otherwise                        = error ()
 
 dvsRvalidator :: PlutusV2.Validator
-dvsRvalidator = PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| dvsR ||])
+dvsRvalidator = PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| datumVsRedeemer ||])
 
-{-# INLINABLE dvsR2 #-}
-dvsR2 ::  BuiltinData -> BuiltinData -> BuiltinData -> ()
-dvsR2 datum redeemer _ 
+{-# INLINABLE datumVsRedeemer2 #-}
+datumVsRedeemer2 ::  BuiltinData -> BuiltinData -> BuiltinData -> ()
+datumVsRedeemer2 datum redeemer _ 
  | datum == redeemer                = ()
  | datum == Builtins.mkI 11         = ()
  | redeemer ==  Builtins.mkI 22    = ()
  | otherwise                        = error ()
 --to have an error message (on a different script / scriptAddress, you can use traceError function)
 dvsR2validator :: PlutusV2.Validator
-dvsR2validator = PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| dvsR2 ||])
+dvsR2validator = PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| datumVsRedeemer2 ||])
 
 
 ------------------------------------- SERIALIZE THE CONTRACT --------------------------------------------
+saveDatumVsRedeemer :: IO ()
+saveDatumVsRedeemer = writeValidatorToFile "./testnet/DatumVsRedeemer.plutus" dvsRvalidator
 
-saveVal :: IO ()
-saveVal = writeValidatorToFile "./testnet/DvR.plutus" dvsR2validator
+saveDatumVsRedeemer2 :: IO ()
+saveDatumVsRedeemer2 = writeValidatorToFile "./testnet/DatumVsRedeemer2.plutus" dvsR2validator
+
+saveval :: Integer -> IO ()
+saveval n 
+ | n == 1      = saveDatumVsRedeemer
+ | n == 2      = saveDatumVsRedeemer2
+ | otherwise   = putStr "...This is not the validators you are looking for..."

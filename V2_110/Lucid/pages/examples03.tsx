@@ -8,7 +8,7 @@ import { getAssets } from "../utils/cardano";
 import NftGrid from "../components/NftGrid";
 import initLucid from '../utils/lucid'
 import { Lucid, TxHash, Lovelace, Constr, SpendingValidator, Data, MintingPolicy } from 'lucid-cardano'
-// import * as helios from '@hyperionbt/helios'
+
 
 
 const Helios: NextPage = () => {
@@ -72,7 +72,8 @@ const Helios: NextPage = () => {
     if (lucid) {
       const simpleValidatorAddress: any = lucid.utils.validatorToAddress(
         simpleValidator,
-      );
+      
+        );
       const tx = await lucid
         .newTx()
         .payToContract(simpleValidatorAddress, Datum(19), { lovelace:BigInt (100000000) })

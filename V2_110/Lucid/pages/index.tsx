@@ -37,8 +37,17 @@ const Home: NextPage = () => {
       </div>
       <div>Address: {walletStore.address}</div>
       <div className="mx-40 my-10">
-        <Link href="/examples">
-          <button className="btn btn-primary m-5" >Smart Contract example</button>
+      <Link href="/examples00">
+          <button className="btn btn-primary m-5" >Simple Payment Transactions</button>
+        </Link>
+        <Link href="/examples01">
+          <button className="btn btn-primary m-5" >Always Succeeds and Fails</button>
+        </Link>
+        <Link href="/examples02">
+          <button className="btn btn-primary m-5" >Redeemer 11 and Datum 22</button>
+        </Link>
+        <Link href="/examples03">
+          <button className="btn btn-primary m-5" >Datum vs Redeemer</button>
         </Link>
         <div>Your NFTs:</div>
         <NftGrid nfts={nftList} />

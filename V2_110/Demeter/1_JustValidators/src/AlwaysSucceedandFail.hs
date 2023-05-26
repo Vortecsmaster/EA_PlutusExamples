@@ -77,4 +77,3 @@ saveValue11 = writeDataToFile "./testnet/value11.json" (11 :: Integer)
 
 saveValue22 :: IO ()
 saveValue22 = writeDataToFile "./testnet/value22.json" (22 :: Integer)
-
