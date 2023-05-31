@@ -1,10 +1,14 @@
 # Plutus Developer Environments
 
-We have 3 options for developer environments:
+
+
+We have 4 options for developer environments:
     * Demeter.run Plutus Stack
     * Local Developer Environment based on Plutus Application Framework
-    * Docker Developer Environment based on IOH Plutus Pionneers Program Cohort 4 resources
+    * Docker Developer Environment based on IOH Plutus Pionneers Program Cohort 4 resources.
+    * Jambhala simplified local developer environment.
 
+## Demeter.run
 
 1. Open a Demeter.run account.
 2. Create a new project.
@@ -43,6 +47,8 @@ _Prelude AlwaysSucceedandFail>_
 
 
 
+## Local developer environment
+
 This guide was last tested with Ubuntu 22.04.2 LTS, other versions and platforms might not be exactly the same.
 
 We recommend gNome desktop so you can use google chrome web wallets extensions like Nami
@@ -72,7 +78,7 @@ You need a tool to retrieve files form the internet, like curl or wGet (this gui
  
 
 
-## Install Nix 
+#### Install Nix 
 
 4. Execute
 ```    
@@ -95,6 +101,7 @@ Execute
         git --version
         nano --version
 ```
+#### IOG Binary Cache
 
 6. IOHK Binary Cache (necesary for saving hours of time in the Plutus Libraries installation)
 
@@ -112,7 +119,7 @@ trusted-public-keys = hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ=
 ```
 (Reference: In nano editor, You can Save with Ctrl-O and close the file with Ctrl-X)
 
-## SETUP PLUTUS-APPS
+#### Setup PLUTUS-APPS
 
 7.Clone the Plutus-Apps repository
 Execute
@@ -169,7 +176,7 @@ Execute
 You might use a browser to navigate to https://localhost:8009 and be able to see the Plutus Application Playground, try compiling and running the test contract to see if you were successfull. -->
 
 
-## Building the Plutus Documentation 
+#### Building the Plutus Documentation 
 
 
 Navigate to the plutus-apps folder and open another nix-shell 
