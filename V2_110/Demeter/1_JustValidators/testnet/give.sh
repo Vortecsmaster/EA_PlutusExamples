@@ -1,6 +1,8 @@
-utxoin="a6800bc5e30bfc555a39425b68c15d052c99310867099eda32ef14f915558ae8#0"
-address=$(cat AS.addr) 
-output="100000000"
+utxoin="0064391f48e814a5259e905f426e438c65ffba6b0bb750c7a438f58c35370c23#0"
+address=$(cat datum22.addr) 
+output="500000000"
+PREVIEW="--testnet-magic 2"
+nami="<provide a wallet to see the tx in blockchain explorers>" 
 
 
 cardano-cli transaction build \
@@ -15,7 +17,7 @@ cardano-cli transaction build \
 
 cardano-cli transaction sign \
     --tx-body-file give.unsigned \
-    --signing-key-file Wallet/Adr01.skey \
+    --signing-key-file ialice.skey \
     $PREVIEW \
     --out-file give.signed
 
