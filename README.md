@@ -3,10 +3,10 @@
 
 
 We have 4 options for developer environments:
-    * Demeter.run Plutus Stack
-    * Local Developer Environment based on Plutus Application Framework
-    * Docker Developer Environment based on IOH Plutus Pionneers Program Cohort 4 resources.
-    * Jambhala simplified local developer environment.
+* Demeter.run Plutus Stack
+* Local Developer Environment based on Plutus Application Framework
+* Docker Developer Environment based on IOH Plutus Pionneers Program Cohort 4 resources.
+* Jambhala simplified local developer environment.
 
 ## Demeter.run
 
