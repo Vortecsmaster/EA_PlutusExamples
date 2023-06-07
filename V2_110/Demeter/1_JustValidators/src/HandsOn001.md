@@ -129,7 +129,8 @@ _verify that the value is taken from the contract_
 
 
 ---
-Handson No. 01
+## HANDSON No. 01:  untyped Datum vs Redeemer
+
 1. Add a new validator to the AlwaysSucceedandFail module (name at your discretion)
 2. Change the logic to the following:
     datum must be equal to redeemer OR
