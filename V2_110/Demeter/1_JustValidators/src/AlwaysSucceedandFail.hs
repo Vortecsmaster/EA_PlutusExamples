@@ -49,7 +49,7 @@ datum22Validator :: Validator
 datum22Validator = mkValidatorScript $$(PlutusTx.compile [|| datum22 ||])  
 
 
-{- Serialised Script and Values-}
+{- Serialised Scripts and Values -}
 
 saveAlwaysSucceeds :: IO ()
 saveAlwaysSucceeds =  writeValidatorToFile "./testnet/alwaysSucceeds.plutus" alwaysSucceedsValidator
@@ -77,3 +77,15 @@ saveValue11 = writeDataToFile "./testnet/value11.json" (11 :: Integer)
 
 saveValue22 :: IO ()
 saveValue22 = writeDataToFile "./testnet/value22.json" (22 :: Integer)
+
+saveAll :: IO ()
+saveAll = do
+            saveAlwaysSucceeds
+            saveAlwaysFails
+            saveRedeemer11
+            saveDatum22
+            saveUnit
+            saveTrue
+            saveFalse
+            saveValue11
+            saveValue22

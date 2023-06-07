@@ -133,7 +133,7 @@ Handson No. 01
 1. Add a new validator to the AlwaysSucceedandFail module (name at your discretion)
 2. Change the logic to the following:
     datum must be equal to redeemer OR
-    redeemer must be 22 (escape condition)
+    redeemer must be 11 (escape condition)
 3. Serialize the contract, and the following values:
    1. a number
    2. a boolean

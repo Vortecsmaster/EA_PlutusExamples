@@ -19,12 +19,12 @@ import                  Prelude                     (IO)
 ------------------------------------------------------------------------------------------
 
 {-# INLINABLE typedDatum22 #-}
-typedDatum22 :: Integer -> () -> () -> Bool
+typedDatum22 :: Integer -> () -> ScriptContext -> Bool
 typedDatum22 datum _ _ = traceIfFalse "Not the right datum!" (datum ==  22)
 
 {-# INLINABLE typedRedeemer11 #-}
-typedRedeemer11 ::  () -> Integer -> () -> Bool
-typedRedeemer11 _ redeemer_ = traceIfFalse "Not the right redeemer!" (redeemer ==  11)
+typedRedeemer11 ::  () -> Integer -> ScriptContext -> Bool
+typedRedeemer11 _ redeemer _ = traceIfFalse "Not the right redeemer!" (redeemer ==  11)
 
 ------------------------------------------------------------------------------------------
 -- Custom Types
@@ -33,16 +33,17 @@ typedRedeemer11 _ redeemer_ = traceIfFalse "Not the right redeemer!" (redeemer =
 newtype OurWonderfullDatum = OWD Integer
 unstableMakeIsData ''OurWonderfullDatum
 
-data OurWonderfullRedeemer = OWR Integer | JOKER 
+data OurWonderfullRedeemer = OWR Integer | JOKER Bool
 makeIsDataIndexed ''OurWonderfullRedeemer [('OWR,0),('JOKER,1)]
 
 {-# INLINABLE customTypedDatum22 #-}
-customTypedDatum22 :: Integer -> () -> () -> Bool
-customTypedDatum22 datum _ _ = traceIfFalse "Not the right datum!" (datum ==  22)
+customTypedDatum22 :: OurWonderfullDatum -> () -> ScriptContext -> Bool
+customTypedDatum22 (OWD datum) _ _ = traceIfFalse "Not the right datum!" (datum ==  22)
 
 {-# INLINABLE customTypedRedeemer11 #-}
-customTypedRedeemer11 ::  () -> Integer -> () -> Bool
-customTypedRedeemer11 _ redeemer _ = traceIfFalse "Not the right redeemer!" (redeemer ==  11)
+customTypedRedeemer11 ::  () -> OurWonderfullRedeemer -> ScriptContext -> Bool
+customTypedRedeemer11 _ (OWR number) _    =  traceIfFalse "Not the right redeemer!" (number ==  11)
+customTypedRedeemer11 _ (JOKER boolean) _ =  traceIfFalse "The Joker sais no!" boolean
 
 ------------------------------------------------------------------------------------------
 -- Mappers and Compiling expresions
@@ -68,11 +69,68 @@ typedRedeemer11Val = PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| mappedTy
 mappedCustomTypedDatum22 :: BuiltinData -> BuiltinData -> BuiltinData -> ()
 mappedCustomTypedDatum22 = wrapValidator customTypedDatum22
 
-mappedCustomRedeemer11 :: BuiltinData -> BuiltinData -> BuiltinData -> ()
-mappedCustomRedeemer11 = wrapValidator customTypedRedeemer11
+mappedCustomTypedRedeemer11 :: BuiltinData -> BuiltinData -> BuiltinData -> ()
+mappedCustomTypedRedeemer11 = wrapValidator customTypedRedeemer11
 
 customTypedDatum22Val :: Validator
 customTypedDatum22Val = PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| mappedCustomTypedDatum22 ||])
 
 customTypedRedeemer11Val :: Validator
 customTypedRedeemer11Val = PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| mappedCustomTypedRedeemer11 ||])
+
+------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------
+
+{- Serialised Scripts and Values -}
+
+saveTypedDatum22 :: IO ()
+saveTypedDatum22 =  writeValidatorToFile "./testnet/typedDatum22.plutus" typedDatum22Val
+
+saveTypedRedeemer11 :: IO ()
+saveTypedRedeemer11 =  writeValidatorToFile "./testnet/typedRedeemer11.plutus" typedRedeemer11Val
+
+saveCustomTypedDatum22 :: IO ()
+saveCustomTypedDatum22 =  writeValidatorToFile "./testnet/customTypedDatum22.plutus" customTypedDatum22Val
+
+saveCustomTypedRedeemer11 :: IO ()
+saveCustomTypedRedeemer11 =  writeValidatorToFile "./testnet/customTypedRedeemer11.plutus" customTypedRedeemer11Val
+
+saveUnit :: IO ()
+saveUnit = writeDataToFile "./testnet/unit.json" ()
+
+saveValue11 :: IO ()
+saveValue11 = writeDataToFile "./testnet/value11.json" (11 :: Integer)
+
+saveValue22 :: IO ()
+saveValue22 = writeDataToFile "./testnet/value22.json" (22 :: Integer)
+
+saveGoodDatum  :: IO ()
+saveGoodDatum = writeDataToFile "./testnet/goodOWD.json" (OWD 22)
+
+saveBadDatum  :: IO ()
+saveBadDatum = writeDataToFile "./testnet/badOWD.json" (OWD 23)
+
+saveOWR  :: IO ()
+saveOWR = writeDataToFile "./testnet/OWR.json" ()
+
+saveGoodJOKER :: IO ()
+saveGoodJOKER = writeDataToFile "./testnet/GoodJoker.json" (JOKER True)
+
+saveBadJOKER :: IO ()
+saveBadJOKER = writeDataToFile "./testnet/BadJoker.json" (JOKER False)
+
+saveAll :: IO ()
+saveAll = do
+            saveTypedDatum22
+            saveTypedRedeemer11
+            saveCustomTypedDatum22
+            saveCustomTypedRedeemer11
+            saveUnit
+            saveValue11
+            saveValue22
+            saveGoodDatum
+            saveBadDatum
+            saveOWR
+            saveGoodJOKER
+            saveBadJOKER
+            
