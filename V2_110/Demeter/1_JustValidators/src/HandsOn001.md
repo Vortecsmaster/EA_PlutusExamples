@@ -2,6 +2,8 @@
 
 ## EXAMPLE 01: Simple Validators
 
+_Navigate to the folder 1_JustValidators_
+
 #### Lock and unlock some value on the scriptAddress of the redeemer11.plutus validator.
 
 ###### Requires:  At least one funded payment address with its correspoding keys. 
@@ -126,13 +128,12 @@ chmod +x grab.sh
 _verify that the value is taken from the contract_
 
 
-
 ---
 Handson No. 01
 1. Add a new validator to the AlwaysSucceedandFail module (name at your discretion)
 2. Change the logic to the following:
     datum must be equal to redeemer OR
-    redeemer must be true (escape condition)
+    redeemer must be 22 (escape condition)
 3. Serialize the contract, and the following values:
    1. a number
    2. a boolean
@@ -141,6 +142,7 @@ Handson No. 01
    1. one with datum with a number
    2. one with datum with a boolean
    3. one with datum unit
-5. Create the tx to unlock the UTxO with datum boolean
-6. Create the tx to unlock the UTxO with datum unit
-7. Create the tx to unlock the UTxO with datum number
+5. Unlock the value from the UTxOs created on previous step 4
+   1. the UTxO with a datum with a number
+   2. the UTxO with a datum with a boolean
+   3. the UTxO with a datum unit
