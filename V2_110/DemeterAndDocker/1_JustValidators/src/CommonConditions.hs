@@ -6,16 +6,16 @@
 module CommonConditions where
 
 --PlutusTx 
-import                  PlutusTx                       (BuiltinData, compile,unstableMakeIsData, makeIsDataIndexed)
+import                  PlutusTx                       (BuiltinData, compile, unstableMakeIsData, makeIsDataIndexed)
 import                  PlutusTx.Prelude               (traceIfFalse, otherwise, (==), Bool (..), Integer, ($), (>))
 import                  Plutus.V1.Ledger.Value      as PlutusV1
 import                  Plutus.V1.Ledger.Interval      (contains, to) 
 import                  Plutus.V2.Ledger.Api        as PlutusV2
 import                  Plutus.V2.Ledger.Contexts      (txSignedBy, valueSpent)
+--Serialization
 import                  Mappers                        (wrapValidator)
 import                  Serialization                  (writeValidatorToFile, writeDataToFile)
-
-import                  Prelude                     (IO)
+import                  Prelude                         (IO)
 
 --THE ON-CHAIN CODE
 data ConditionsDatum = Conditions { owner :: PubKeyHash
@@ -76,3 +76,12 @@ saveRedeemerTime = writeDataToFile "./testnet/redeemTime.json" Time
 
 saveRedeemerPrice :: IO ()
 saveRedeemerPrice = writeDataToFile "./testnet/redeemPrice.json" Price
+
+saveAll :: IO ()
+saveAll = do
+            saveConditionsValidator
+            saveUnit
+            saveDatum
+            saveRedeemerOwner
+            saveRedeemerPrice
+            saveRedeemerTime

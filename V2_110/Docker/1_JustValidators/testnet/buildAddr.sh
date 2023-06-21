@@ -1,1 +1,0 @@
-cardano-cli address build --payment-script-file AlwaysSucceedScript.plutus --testnet-magic 2 --out-file AlwaysSucceedScript.addr
