@@ -9,8 +9,8 @@ import                  PlutusTx                       (BuiltinData, compile)
 import                  PlutusTx.Builtins              as Builtins (mkI)
 import                  PlutusTx.Prelude               (error, otherwise, (==), Bool (..), Integer)
 import                  Plutus.V2.Ledger.Api        as PlutusV2
+--Serialization
 import                  Serialization    (writeValidatorToFile, writeDataToFile)
-
 import                  Prelude                     (IO)
  
 --THE ON-CHAIN CODE

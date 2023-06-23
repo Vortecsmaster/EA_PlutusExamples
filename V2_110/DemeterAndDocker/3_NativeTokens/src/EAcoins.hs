@@ -21,7 +21,24 @@ unstableMakeIsData ''Action
 
 {-# INLINABLE eaCoins #-}
 eaCoins :: Action -> ScriptContext -> Bool
-eaCoins action sContext = True
+eaCoins action sContext = case action of
+                            Owner   -> traceIfFalse    "Not signed properly!"  signedByOwner
+                            Time    -> traceIfFalse    "Your run out of time!" timeLimitNotReached                                         
+                            Price   -> traceIfFalse    "Price is not covered"  priceIsCovered
+    where
+        signedByOwner :: Bool
+        signedByOwner = txSignedBy info $ owner datum
+
+        timeLimitNotReached :: Bool
+        timeLimitNotReached = contains (to $ POSIXTime 1704067199000) $ txInfoValidRange info 
+
+        priceIsCovered :: Bool
+        priceIsCovered =  assetClassValueOf (valueSpent info)  (AssetClass (adaSymbol,adaToken)) > 100000000
+
+        info :: TxInfo
+        info = scriptContextTxInfo sContext
+
+
 
 {-# INLINABLE wrappedEAcoinsPolicy #-}
 wrappedEAcoinsPolicy :: BuiltinData -> BuiltinData -> ()

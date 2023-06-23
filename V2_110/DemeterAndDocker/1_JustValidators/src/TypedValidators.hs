@@ -9,9 +9,9 @@ module TypedValidators where
 import                  PlutusTx                       (BuiltinData, compile,unstableMakeIsData, makeIsDataIndexed)
 import                  PlutusTx.Prelude               (traceIfFalse, otherwise, (==), Bool (..), Integer, ($))
 import                  Plutus.V2.Ledger.Api        as PlutusV2
+--Serialization
 import                  Mappers                        (wrapValidator)
 import                  Serialization                  (writeValidatorToFile, writeDataToFile)
-
 import                  Prelude                     (IO)
 
 ------------------------------------------------------------------------------------------
