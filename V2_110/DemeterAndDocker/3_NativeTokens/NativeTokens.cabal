@@ -10,7 +10,7 @@ build-type:         Simple
 extra-doc-files:    CHANGELOG.md
 
 library
-    exposed-modules:  EAcoins, EAnft, LearnersCoin
+    exposed-modules:  EAcoins, EAnft, DarjanCoins
     build-depends:    aeson
                     , base ^>=4.14.3.0
                     , bytestring

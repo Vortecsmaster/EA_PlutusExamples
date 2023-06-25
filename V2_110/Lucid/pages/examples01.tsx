@@ -53,18 +53,18 @@ const Helios: NextPage = () => {
 
   const give = async () => {
     if (lucid) {
-      const simpleValidatorAddress: any = lucid.utils.validatorToAddress(
-        simpleValidator,
-      
+      const datum22Address: any = lucid.utils.validatorToAddress(
+        datum22,
+
         );
       const tx = await lucid
         .newTx()
-        .payToContract(simpleValidatorAddress, Datum(19), { lovelace:BigInt (100000000) })
-        .payToContract(simpleValidatorAddress, UnitDatum, { lovelace:BigInt (200000000) })
-        .payToContract(simpleValidatorAddress, Datum(19), { lovelace:BigInt (300000000) })
-        .payToContract(simpleValidatorAddress, Datum(20), { lovelace:BigInt (400000000) })
-        .payToContract(simpleValidatorAddress, Datum(23), { lovelace:BigInt (400000000) })
-        .payToContract(simpleValidatorAddress, Datum(23), { lovelace:BigInt (400000000) })
+        .payToContract(datum22Address, Datum(22), { lovelace:BigInt (100000000) })
+        .payToContract(datum22Address, UnitDatum, { lovelace:BigInt (5000000) })
+        .payToContract(datum22Address, Datum(22), { lovelace:BigInt (200000000) })
+        .payToContract(datum22Address, Datum(22), { lovelace:BigInt (300000000) })
+        .payToContract(datum22Address, Datum(22), { lovelace:BigInt (400000000) })
+        .payToContract(datum22Address, Datum(22), { lovelace:BigInt (500000000) })
         .complete();
       
       const signedTx = await tx.sign().complete();
@@ -74,15 +74,15 @@ const Helios: NextPage = () => {
 
   const grab = async () => {
     if (lucid) {
-      const simpleValidatorAddress: any = lucid.utils.validatorToAddress(
-        simpleValidator,
+      const datum22Address: any = lucid.utils.validatorToAddress(
+        datum22,
       );
               
-      //  const utxos = (await lucid.utxosAt(simpleValidatorAddress)).filter((utxo) =>
-      //  utxo.datumHash === lucid.utils.datumToHash(Datum(20))
-      //  );
+      const utxos = (await lucid.utxosAt(datum22Address)).filter((utxo) =>
+      utxo.datumHash === lucid.utils.datumToHash(Datum(22))
+        );
       
-      const utxos = await lucid.utxosAt(simpleValidatorAddress);
+      // const utxos = await lucid.utxosAt(datum22Address);
       
       console.log(utxos);
 
@@ -91,13 +91,11 @@ const Helios: NextPage = () => {
       const tx = await lucid
                .newTx()
                .collectFrom(utxos, Redeemer(22))
-               .attachSpendingValidator(simpleValidator)
+               .attachSpendingValidator(datum22)
                .complete();
       const signedTx = await tx.sign().complete();
       const txHash = await signedTx.submit();
-             
     return txHash;
-                   
   }
 }
 
@@ -144,17 +142,17 @@ const Helios: NextPage = () => {
         </p>
       </div>
       <div className="mx-40 my-10">
-        <button className="btn btn-primary m-5" onClick={() => { lockUtxo() }} >Lock</button>
-        <button className="btn btn-secondary m-5" onClick={() => { unlockUtxo() }}>Unlock</button>
-        {/* <button className="btn btn-secondary m-5" onClick={() => { mintNFT() }}>Mint NFT</button> */}
-        <button className="btn btn-secondary m-5" onClick={() => { bounty() }}>Lock math bounty</button>
+        <button className="btn btn-primary m-5" onClick={() => { give() }} >Lock</button>
+        <button className="btn btn-secondary m-5" onClick={() => { grab() }}>Unlock</button>
+        {/* <button className="btn btn-secondary m-5" onClick={() => { mintNFT() }}>Mint NFT</button>
+        <button className="btn btn-secondary m-5" onClick={() => { bounty() }}>Lock math bounty</button> */}
       </div>
-      <div className="mx-40 my-10">
+      {/* <div className="mx-40 my-10">
         <label className="label"> Vesting Contract</label> 
         <button className="btn btn-primary m-5" onClick={() => { lockUtxo() }} >Give</button>
         <button className="btn btn-secondary m-5" onClick={() => { redeemUtxo() }}>Grab</button>
         <button className="btn btn-secondary m-5" onClick={() => { solution() }}>GetBounty</button>
-      </div>
+      </div> */}
     </div>
   )
 }
