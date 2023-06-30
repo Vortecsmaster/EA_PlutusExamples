@@ -3,7 +3,7 @@
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE OverloadedStrings  #-}
 
-module LearnersCoins where
+module LearnersCoin where
 
 import           PlutusTx                        (BuiltinData, compile, unstableMakeIsData, makeIsDataIndexed)
 import           PlutusTx.Prelude                (Bool (..),traceIfFalse, otherwise, Integer, ($), (<=), (&&))

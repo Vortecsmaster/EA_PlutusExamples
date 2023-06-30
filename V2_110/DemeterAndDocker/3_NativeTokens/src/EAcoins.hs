@@ -1,17 +1,20 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell   #-}
+{-# LANGUAGE OverloadedStrings  #-}
 
 module EAcoins where
 
-import           PlutusTx               (Builtindata, unstableMakeIsData, makeIsDataIndexed)
-import           PlutusTx.Prelude       (Bool (..))
-import           Plutus.V2.Ledger.Api   (BuiltinData, CurrencySymbol,
-                                         MintingPolicy, ScriptContext,
-                                         mkMintingPolicyScript)
+import           PlutusTx                        (BuiltinData, compile, unstableMakeIsData, makeIsDataIndexed)
+import           PlutusTx.Prelude                (Bool (..),traceIfFalse, otherwise, Integer, ($), (<=), (&&), (>))
+import           Plutus.V2.Ledger.Api            (CurrencySymbol, MintingPolicy, ScriptContext, mkMintingPolicyScript)
+import           Plutus.V2.Ledger.Api            as PlutusV2
+import           Plutus.V1.Ledger.Value          as PlutusV1
+import           Plutus.V1.Ledger.Interval      (contains, to) 
+import           Plutus.V2.Ledger.Contexts      (txSignedBy, valueSpent, ownCurrencySymbol)
 --Serialization
 import           Mappers                (wrapPolicy)
-import           Serialization          (currencySymbol, writePolicyToFile) 
+import           Serialization          (currencySymbol, writePolicyToFile,  writeDataToFile) 
 import           Prelude                (IO)
 
 -- ON-CHAIN CODE
@@ -19,21 +22,28 @@ import           Prelude                (IO)
 data Action = Owner | Time | Price
 unstableMakeIsData ''Action
 
+data OurRedeemer = { action :: Action
+                   , owner :: PubKeyHash
+                   , timelimit :: POSIXTime
+                   , price :: Integer }
+
+unstableMakeIsData ''OurRedeemer
+
 {-# INLINABLE eaCoins #-}
-eaCoins :: Action -> ScriptContext -> Bool
-eaCoins action sContext = case action of
+eaCoins :: OurRedeemer -> ScriptContext -> Bool
+eaCoins redeemer sContext = case action redeemer of
                             Owner   -> traceIfFalse    "Not signed properly!"  signedByOwner
                             Time    -> traceIfFalse    "Your run out of time!" timeLimitNotReached                                         
                             Price   -> traceIfFalse    "Price is not covered"  priceIsCovered
     where
         signedByOwner :: Bool
-        signedByOwner = txSignedBy info $ owner datum
+        signedByOwner = txSignedBy info $ owner redeemer
 
         timeLimitNotReached :: Bool
-        timeLimitNotReached = contains (to $ POSIXTime 1704067199000) $ txInfoValidRange info 
+        timeLimitNotReached = contains (to $ timelimit redeemer) $ txInfoValidRange info 
 
         priceIsCovered :: Bool
-        priceIsCovered =  assetClassValueOf (valueSpent info)  (AssetClass (adaSymbol,adaToken)) > 100000000
+        priceIsCovered =  assetClassValueOf (valueSpent info)  (AssetClass (adaSymbol,adaToken)) > price redeemer
 
         info :: TxInfo
         info = scriptContextTxInfo sContext
