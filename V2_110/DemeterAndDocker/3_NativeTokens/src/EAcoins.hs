@@ -22,7 +22,7 @@ import           Prelude                (IO)
 data Action = Owner | Time | Price
 unstableMakeIsData ''Action
 
-data OurRedeemer = { action :: Action
+data OurRedeemer = OR { action :: Action
                    , owner :: PubKeyHash
                    , timelimit :: POSIXTime
                    , price :: Integer }

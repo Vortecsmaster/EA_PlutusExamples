@@ -24,6 +24,10 @@ import           Cardano.Api.Shelley         (Address (..))
 import qualified Cardano.Api.Shelley         as Api
 import           Cardano.Crypto.Hash.Class   (hashToBytes)
 import           Serialization               (policyToScript, validatorToScript)
+import qualified Data.ByteString             as BS
+import qualified Data.ByteString.Base16      as BS16
+import           Data.Text                   (pack)
+import qualified Data.Text                   as Text
 
 {-# INLINABLE wrapValidator #-}
 wrapValidator :: ( UnsafeFromData a
@@ -52,3 +56,8 @@ wrapStakeValidator :: UnsafeFromData a
                      -> (BuiltinData -> BuiltinData -> ())
 wrapStakeValidator = wrapPolicy  
 
+-- bytesFromHex :: BS.ByteString -> BS.ByteString
+-- bytesFromHex = either error id . BS16.decode
+
+-- bytesToHex :: BS.ByteString -> BS.ByteString
+-- bytesToHex = BS16.encode
