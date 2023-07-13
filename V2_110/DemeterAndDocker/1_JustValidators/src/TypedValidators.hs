@@ -10,7 +10,7 @@ import                  PlutusTx                       (BuiltinData, compile,uns
 import                  PlutusTx.Prelude               (traceIfFalse, otherwise, (==), Bool (..), Integer, ($))
 import                  Plutus.V2.Ledger.Api        as PlutusV2
 --Serialization
-import                  Mappers                        (wrapValidator)
+import                  Wrappers                        (wrapValidator)
 import                  Serialization                  (writeValidatorToFile, writeDataToFile)
 import                  Prelude                     (IO)
 
@@ -51,32 +51,32 @@ customTypedRedeemer11 _ (JOKER boolean) _ =  traceIfFalse "The Joker sais no!" b
 
 -- for primitives types
 
-mappedTypedDatum22 :: BuiltinData -> BuiltinData -> BuiltinData -> ()
-mappedTypedDatum22 = wrapValidator customTypedDatum22
+wrappedTypedDatum22 :: BuiltinData -> BuiltinData -> BuiltinData -> ()
+wrappedTypedDatum22 = wrapValidator customTypedDatum22
 
 typedDatum22Val :: PlutusV2.Validator
-typedDatum22Val = PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| mappedTypedDatum22 ||])
+typedDatum22Val = PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| wrappedTypedDatum22 ||])
 
-mappedTypedRedeemer11 :: BuiltinData -> BuiltinData -> BuiltinData -> ()
-mappedTypedRedeemer11 = wrapValidator typedRedeemer11
+wrappedTypedRedeemer11 :: BuiltinData -> BuiltinData -> BuiltinData -> ()
+wrappedTypedRedeemer11 = wrapValidator typedRedeemer11
 
 typedRedeemer11Val :: Validator
-typedRedeemer11Val = PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| mappedTypedRedeemer11 ||])
+typedRedeemer11Val = PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| wrappedTypedRedeemer11 ||])
 
 
 -- for custom types
 
-mappedCustomTypedDatum22 :: BuiltinData -> BuiltinData -> BuiltinData -> ()
-mappedCustomTypedDatum22 = wrapValidator customTypedDatum22
+wrappedCustomTypedDatum22 :: BuiltinData -> BuiltinData -> BuiltinData -> ()
+wrappedCustomTypedDatum22 = wrapValidator customTypedDatum22
 
-mappedCustomTypedRedeemer11 :: BuiltinData -> BuiltinData -> BuiltinData -> ()
-mappedCustomTypedRedeemer11 = wrapValidator customTypedRedeemer11
+wrappedCustomTypedRedeemer11 :: BuiltinData -> BuiltinData -> BuiltinData -> ()
+wrappedCustomTypedRedeemer11 = wrapValidator customTypedRedeemer11
 
 customTypedDatum22Val :: Validator
-customTypedDatum22Val = PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| mappedCustomTypedDatum22 ||])
+customTypedDatum22Val = PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| wrappedCustomTypedDatum22 ||])
 
 customTypedRedeemer11Val :: Validator
-customTypedRedeemer11Val = PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| mappedCustomTypedRedeemer11 ||])
+customTypedRedeemer11Val = PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| wrappedCustomTypedRedeemer11 ||])
 
 ------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------

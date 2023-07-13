@@ -13,7 +13,7 @@ import                  Plutus.V1.Ledger.Interval      (contains, to)
 import                  Plutus.V2.Ledger.Api        as PlutusV2
 import                  Plutus.V2.Ledger.Contexts      (txSignedBy, valueSpent)
 --Serialization
-import                  Mappers                        (wrapValidator)
+import                  Wrappers                        (wrapValidator)
 import                  Serialization                  (writeValidatorToFile, writeDataToFile)
 import                  Prelude                         (IO)
 

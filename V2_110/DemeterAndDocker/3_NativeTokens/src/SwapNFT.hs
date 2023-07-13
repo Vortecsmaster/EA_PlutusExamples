@@ -11,7 +11,7 @@ import           Plutus.V2.Ledger.Api (BuiltinData, CurrencySymbol,
                                        mkMintingPolicyScript)
 
 import           Prelude              (IO)
-import           Mappers          (wrapPolicy)
+import           Wrappers          (wrapPolicy)
 import           Serialization    (currencySymbol, writePolicyToFile) 
 
 

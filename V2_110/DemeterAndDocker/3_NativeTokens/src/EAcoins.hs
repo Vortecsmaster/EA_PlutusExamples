@@ -13,7 +13,7 @@ import           Plutus.V1.Ledger.Value          as PlutusV1
 import           Plutus.V1.Ledger.Interval      (contains, to) 
 import           Plutus.V2.Ledger.Contexts      (txSignedBy, valueSpent, ownCurrencySymbol)
 --Serialization
-import           Mappers                (wrapPolicy)
+import           Wrappers                (wrapPolicy)
 import           Serialization          (currencySymbol, writePolicyToFile,  writeDataToFile) 
 import           Prelude                (IO)
 

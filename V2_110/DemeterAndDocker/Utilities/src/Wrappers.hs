@@ -1,6 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Mappers 
+module Wrappers 
   ( wrapValidator
   , wrapPolicy
   , wrapStakeValidator

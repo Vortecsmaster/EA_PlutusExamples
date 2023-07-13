@@ -10,7 +10,7 @@ build-type:         Simple
 extra-doc-files:    CHANGELOG.md
 
 library
-    exposed-modules:  Serialization, Mappers
+    exposed-modules:  Serialization, Wrappers
     build-depends:    aeson
                     , base ^>=4.14.3.0
                     , base16-bytestring
