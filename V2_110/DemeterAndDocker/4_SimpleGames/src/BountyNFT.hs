@@ -19,7 +19,7 @@ import           Plutus.V2.Ledger.Api       (BuiltinData, CurrencySymbol,
                                              mkMintingPolicyScript)
 import           Plutus.V2.Ledger.Api     as PlutusV2
 import           Prelude              (IO)
-import           Mappers          (wrapPolicy)
+import           Wrappers          (wrapPolicy)
 import           Serialization    (currencySymbol, writePolicyToFile, writeDataToFile) 
 import GHC.Base (IO)
 

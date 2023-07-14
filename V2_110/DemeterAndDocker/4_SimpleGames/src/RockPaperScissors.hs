@@ -3,11 +3,11 @@
 {-# LANGUAGE TemplateHaskell     #-}
 {-# LANGUAGE OverloadedStrings   #-} 
 
-module GuessingGame where
+module RockPaperScissors where
 
 --PlutusTx 
 import                  PlutusTx                            (BuiltinData, compile, unstableMakeIsData, makeIsDataIndexed, makeLift)
-import                  PlutusTx.Prelude                    (traceIfFalse, otherwise, (==), Bool (..), Integer, ($), (>), (+), (&&), sha2_256)
+import                  PlutusTx.Prelude                    (Eq ,traceIfFalse, otherwise, (==), Bool (..), Integer, ($), (>), (+), (&&), sha2_256)
 import                  Plutus.V1.Ledger.Value          as  PlutusV1
 import                  Plutus.V1.Ledger.Interval           (contains, to) 
 import                  Plutus.V2.Ledger.Api            as  PlutusV2
@@ -22,7 +22,36 @@ import   qualified      Data.ByteString.Char8           as  C
 
 
 --THE ON-CHAIN CODE
+data GameOption = Rock | Paper | Scissors --deriving Show for REPL
+data GameState = Player1 | Player2 | Draw --deriving Show for REPL
 
+unstableMakeIsData ''GameOption
+unstableMakeIsData ''GameState
+
+instance Eq GameOption where
+    {-# INLINABLE (==) #-}
+    Rock     == Rock     = True
+    Paper    == Paper    = True
+    Scissors == Scissors = True
+    _        == _        = False
+
+{-# INLINABLE gameState #-}
+gameState :: GameOption -> GameOption -> GameState
+gameState p1 p2 
+ | p1 == Rock && p2 == Rock             = Draw
+ | p1 == Paper && p2 == Paper           = Draw
+ | p1 == Scissors && p2 == Scissors     = Draw
+ | p1 == Rock && p2 == Scissors         = Player1
+ | p1 == Paper && p2 == Rock            = Player1
+ | p1 == Scissors && p2 == Paper        = Player1
+ | p1 == Rock && p2 == Paper            = Player2
+ | p1 == Paper && p2 == Scissors        = Player2
+ | p1 == Scissors && p2 == Rock         = Player2
+
+ 
+
+
+ 
 newtype HashedString = HashedString BuiltinByteString
 unstableMakeIsData ''HashedString
 

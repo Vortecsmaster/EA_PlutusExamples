@@ -28,3 +28,6 @@ V2_110/DemeterAndDocker/3_NativeTokens/testnet/unit.json
 *.signed
 *.body
 *.pid
+*.addr
+*.unsigned
+*.params
