@@ -23,9 +23,9 @@ data Action = Owner | Time | Price
 unstableMakeIsData ''Action
 
 data OurRedeemer = OR { action :: Action
-                   , owner :: PubKeyHash
+                   , owner     :: PubKeyHash
                    , timelimit :: POSIXTime
-                   , price :: Integer }
+                   , price     :: Integer }
 
 unstableMakeIsData ''OurRedeemer
 

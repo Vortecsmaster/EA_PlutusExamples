@@ -32,7 +32,7 @@ unstableMakeIsData '' ActionsRedeemer
 conditionator :: ConditionsDatum -> ActionsRedeemer -> ScriptContext -> Bool
 conditionator datum redeemer sContext = case redeemer of
                                          Owner   -> traceIfFalse    "Not signed properly!"  signedByOwner
-                                         Time    -> traceIfFalse    "Your run out of time!" timeLimitNotReached                                         
+                                         Time    -> traceIfFalse    "You run out of time!" timeLimitNotReached                                         
                                          Price   -> traceIfFalse    "Price is not covered"  priceIsCovered
     where
         signedByOwner :: Bool
@@ -48,11 +48,11 @@ conditionator datum redeemer sContext = case redeemer of
         info = scriptContextTxInfo sContext
 
 
-mappedCommonConditions :: BuiltinData -> BuiltinData -> BuiltinData -> ()
-mappedCommonConditions = wrapValidator conditionator
+wrappedCommonConditions :: BuiltinData -> BuiltinData -> BuiltinData -> ()
+wrappedCommonConditions = wrapValidator conditionator
 
 conditionsValidator :: Validator
-conditionsValidator =  PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| mappedCommonConditions ||])
+conditionsValidator =  PlutusV2.mkValidatorScript $$(PlutusTx.compile [|| wrappedCommonConditions ||])
 
 ------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------
