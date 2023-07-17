@@ -51,4 +51,3 @@ wrapStakeValidator :: UnsafeFromData a
                      => (a -> ScriptContext -> Bool)
                      -> (BuiltinData -> BuiltinData -> ())
 wrapStakeValidator = wrapPolicy  
-

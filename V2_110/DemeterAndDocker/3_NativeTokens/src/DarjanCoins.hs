@@ -6,10 +6,11 @@
 module DarjanCoins where
 
 import           PlutusTx                        (BuiltinData, compile, unstableMakeIsData, makeIsDataIndexed)
-import           PlutusTx.Prelude                (Bool (..),traceIfFalse, otherwise, Integer, ($), (<=), (&&), any)
+import           PlutusTx.Builtins.Class         (stringToBuiltinByteString)
+import           PlutusTx.Prelude                (Bool (..),traceIfFalse, otherwise, Integer, ($), (<=), (&&), any,map)
 import           Plutus.V2.Ledger.Api            (BuiltinData, CurrencySymbol,
                                                  MintingPolicy, ScriptContext,
-                                                 mkMintingPolicyScript)
+                                                 mkMintingPolicyScript, toBuiltin)
 import           Plutus.V1.Ledger.Value       as PlutusV1
 import           Plutus.V1.Ledger.Interval      (contains, to) 
 import           Plutus.V2.Ledger.Api        as PlutusV2
@@ -17,7 +18,8 @@ import           Plutus.V2.Ledger.Contexts      (txSignedBy, valueSpent, ownCurr
 
 --Serialization
 import           Mappers                (wrapPolicy)
-import           Serialization          (currencySymbol, writePolicyToFile,  writeDataToFile) 
+import           Serialization          (currencySymbol, writePolicyToFile,  writeDataToFile)
+import           Conversions            (bytesFromHex) 
 import           Prelude                (IO)
 
 -- ON-CHAIN CODE
@@ -29,11 +31,13 @@ darjanCoins _ sContext = traceIfFalse "Incorrect Signatures!" (checkSignaturePas
         info :: TxInfo
         info = scriptContextTxInfo sContext
 
+        -- publicKeyHash = PubKeyHash $ toBuiltin $ bytesFromHex "27396e442d87d62131ba6406a5d6fe0eda159eb18904dfa6eeb026de"
+
         conditions :: [PubKeyHash]
-        conditions = [
-            (PubKeyHash "c4034310db8742a0c48539c26aa9890d10961925ffcde9de450581cc"), -- PKH alice
-            (PubKeyHash "d70540296a8155451197472f28ab6c5c4e9830d5c2f1b615307ed10b")  -- PKH bob
-            ]
+        conditions = [(PubKeyHash $ toBuiltin $ bytesFromHex "8fd2af318fe6fd7a8b2f56861b7dda312411281616b902953abf7121")]
+            -- (PubKeyHash (toBuiltin ::ByteString)), -- PKH alice
+            -- (PubKeyHash (toBuiltin x::ByteString))  -- PKH bob
+            --map func list
 
         checkSignaturePassed :: Bool
         checkSignaturePassed = any (\x -> txSignedBy info $ x) conditions
@@ -48,10 +52,10 @@ darjanCoinPolicy = mkMintingPolicyScript $$(PlutusTx.compile [|| wrappedDarjanCo
 -- Serialised Scripts and Values 
 
 saveDarjanCoinPolicy :: IO ()
-saveDarjanCoinPolicy = writePolicyToFile "./validators/handson0007.plutus" darjanCoinPolicy
+saveDarjanCoinPolicy = writePolicyToFile "./testnet/handson07.plutus" darjanCoinPolicy
 
 saveUnit :: IO ()
-saveUnit = writeDataToFile "./data/unit.json" ()
+saveUnit = writeDataToFile "./testnet/unit.json" ()
 
 saveAll :: IO ()
 saveAll = do
