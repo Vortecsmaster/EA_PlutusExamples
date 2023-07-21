@@ -2,6 +2,8 @@
 {-# LANGUAGE NoImplicitPrelude   #-}
 {-# LANGUAGE TemplateHaskell     #-}
 {-# LANGUAGE OverloadedStrings   #-} 
+{-# LANGUAGE DeriveAnyClass      #-} 
+
 
 module RockPaperScissors where
 
@@ -16,17 +18,19 @@ import                  Plutus.V2.Ledger.Contexts           (txSignedBy, valueSp
 import                  Wrappers                             (wrapValidator)
 import                  Serialization                       (writeValidatorToFile, writeDataToFile)
 import                  Prelude                             (IO,String,(.),Show (show), mapM)
+import                  Prelude                             hiding (Eq,(==),(&&),($))
 --Extra
 import                  Text.Printf                         (printf)
 import   qualified      Data.ByteString.Char8           as  C
 
 
 --THE ON-CHAIN CODE
-
+type Player = Integer
 data GameOption = Rock | Paper | Scissors --deriving Show for REPL
 type Salt = BuiltinByteString
 data Secret = Secret BuiltinByteString  
-data GameState = Player1 | Player2 | Draw --deriving Show for REPL
+data GameState = Player1 | Player2 | Reveal --deriving Show for REPL
+data GameOutcome = Player1wins | Player2wins | Draw
 data GameDatum = GD { player1   :: PubKeyHash
                     , player2   :: PubKeyHash
                     , p1Secret  :: Secret
@@ -34,7 +38,7 @@ data GameDatum = GD { player1   :: PubKeyHash
                     , p2option  :: GameOption
                     , theBet    :: Integer
                     }
-data Action = GameChoice | P1claim | P2claim | DrawClaim
+data Action = GameChoice Player | P1claim | P2claim | DrawClaim deriving (Eq)
 
 nOption :: GameOption -> BuiltinByteString
 nOption option = case option of  
@@ -42,8 +46,7 @@ nOption option = case option of
                    Paper    -> "3300"
                    Scissors -> "5500"
 
-
-
+unstableMakeIsData ''GameOutcome
 unstableMakeIsData ''GameOption
 unstableMakeIsData ''Secret
 unstableMakeIsData ''GameState
@@ -62,35 +65,36 @@ instance Eq GameOption where
     _        == _        = False
 
 {-# INLINABLE gameState #-}
-gameState :: GameOption -> GameOption -> GameState
+gameState :: GameOption -> GameOption -> GameOutcome
 gameState p1 p2 
  | p1 == Rock && p2 == Rock             = Draw
  | p1 == Paper && p2 == Paper           = Draw
  | p1 == Scissors && p2 == Scissors     = Draw
- | p1 == Rock && p2 == Scissors         = Player1
- | p1 == Paper && p2 == Rock            = Player1
- | p1 == Scissors && p2 == Paper        = Player1
- | p1 == Rock && p2 == Paper            = Player2
- | p1 == Paper && p2 == Scissors        = Player2
- | p1 == Scissors && p2 == Rock         = Player2
+ | p1 == Rock && p2 == Scissors         = Player1wins
+ | p1 == Paper && p2 == Rock            = Player1wins
+ | p1 == Scissors && p2 == Paper        = Player1wins
+ | p1 == Rock && p2 == Paper            = Player2wins
+ | p1 == Paper && p2 == Scissors        = Player2wins
+ | p1 == Scissors && p2 == Rock         = Player2wins
 
 {-# INLINABLE rpsValidator #-}
 rpsValidator :: GameDatum -> Action -> ScriptContext -> Bool
 rpsValidator datum action sContext 
- | action == GameChoice    = gameChoice
- | action == P1claim       = p1claim
- | action == P2claim       = p2claim
- | action == DrawClaim     = Draw
+ | action == (GameChoice 1)  = gameChoice 1 
+ | action == (GameChoice 2)  = gameChoice 2 
+ | action == P1claim       = True --p1claim
+ | action == P2claim       = True --p2claim
+ | action == DrawClaim     = True --Draw
  | otherwise               = False
     where
-        gameChoice :: Bool
-        gameChoice = if (p1Secret datum /= "") then player2choice else somethingElse
+        gameChoice :: Integer -> Bool
+        gameChoice 2 = True --if (p1Secret datum /= "") then player2choice else somethingElse
+        gameChoice 1 = True
 
         player2choice :: Bool
-        player2choice = (signedBy $ player2 datum) && 
-                        verifyProvidedValue &&
-                        verifyOutputPlayer2 
-
+        player2choice = True --(signedBy $ player2 datum) && 
+                        --verifyProvidedValue &&
+                        --verifyOutputPlayer2 
 
         signedBy :: PubKeyHash -> Bool
         signedBy pkh = txSignedBy info pkh
