@@ -16,9 +16,9 @@ import           Plutus.V2.Ledger.Api        as PlutusV2
 import           Plutus.V2.Ledger.Contexts      (txSignedBy, valueSpent, ownCurrencySymbol)
 
 --Serialization
-import           Wrappers                (wrapPolicy)
-import           Serialization          (currencySymbol, writePolicyToFile,  writeDataToFile) 
-import           Prelude                (IO)
+import           Wrappers                       (wrapPolicy)
+import           Serialization                  (currencySymbol, writePolicyToFile,  writeDataToFile) 
+import           Prelude                        (IO)
 
 -- ON-CHAIN CODE
 
