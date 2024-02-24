@@ -1,0 +1,20 @@
+cabal-version:      3.0
+name:               Test
+version:            1.1.0.0
+license:            MIT
+license-file:       LICENSE
+author:             Roberto Cerrud
+maintainer:         roberto@emurgo.io
+category:           Testing
+build-type:         Simple
+extra-doc-files:    CHANGELOG.md
+
+executable Tests
+    main-is:          Main.hs
+    build-depends:    base ^>=4.14.3.0,
+                      process,
+                      tasty,
+                      tasty-hedgehog,
+                      hedgehog
+    hs-source-dirs:   src
+    default-language: Haskell2010
