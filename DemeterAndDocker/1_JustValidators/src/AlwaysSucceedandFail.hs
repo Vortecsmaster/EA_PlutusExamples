@@ -6,7 +6,7 @@ module AlwaysSucceedandFail where
 
 --PlutusTx 
 import                  PlutusTx                       (BuiltinData, compile)
-import                  PlutusTx.Builtins              as Builtins (mkI)
+import                  PlutusTx.Builtins           as Builtins (mkI)
 import                  PlutusTx.Prelude               (error, otherwise, (==), Bool (..), Integer)
 import                  Plutus.V2.Ledger.Api        as PlutusV2
 --Serialization
@@ -24,7 +24,7 @@ alwaysFails :: BuiltinData -> BuiltinData -> BuiltinData -> ()
 alwaysFails _ _ _ = error () 
 
 {-# INLINABLE redeemer11 #-}
-redeemer11 :: BuiltinData -> BuiltinData -> BuiltinData -> ()
+redeemer11 ::BuiltinData -> BuiltinData -> BuiltinData -> () 
 redeemer11 _ redeemer _ 
  | redeemer == mkI 11  = ()
  | otherwise           = error ()
@@ -35,6 +35,18 @@ datum22 datum _ _
  | datum == mkI 22     = ()
  | otherwise           = error ()
 
+{-# INLINABLE datum23 #-}
+datum23 :: BuiltinData -> BuiltinData -> BuiltinData -> ()
+datum23 datum _ _ 
+ | datum == mkI 23     = ()
+ | otherwise           = error ()
+
+{-# INLINABLE datumEqredeemer #-}
+datumEqredeemer :: BuiltinData -> BuiltinData -> BuiltinData -> ()
+datumEqredeemer datum redeemer _ 
+ | redeemer == datum   = ()
+ | redeemer == mkI 11  = ()
+ | otherwise           = error ()
 
 alwaysSucceedsValidator :: Validator
 alwaysSucceedsValidator = mkValidatorScript $$(PlutusTx.compile [|| alwaysSucceeds ||])  
@@ -46,22 +58,35 @@ redeemer11Validator :: Validator
 redeemer11Validator = mkValidatorScript $$(PlutusTx.compile [|| redeemer11 ||])  
 
 datum22Validator :: Validator
-datum22Validator = mkValidatorScript $$(PlutusTx.compile [|| datum22 ||])  
+datum22Validator = mkValidatorScript $$(PlutusTx.compile [|| datum22 ||])
+
+datum23Validator :: Validator
+datum23Validator = mkValidatorScript $$(PlutusTx.compile [|| datum23 ||]) 
+
+dErValidator :: Validator
+dErValidator = mkValidatorScript $$(PlutusTx.compile [|| datumEqredeemer ||]) 
+
 
 
 {- Serialised Scripts and Values -}
 
 saveAlwaysSucceeds :: IO ()
-saveAlwaysSucceeds =  writeValidatorToFile "./testnet/alwaysSucceeds.plutus" alwaysSucceedsValidator
+saveAlwaysSucceeds =  writeValidatorToFile "./testnet/alwaysSucceeds.uplc" alwaysSucceedsValidator
 
 saveAlwaysFails :: IO ()
-saveAlwaysFails =  writeValidatorToFile "./testnet/alwaysFails.plutus" alwaysFailsValidator
+saveAlwaysFails =  writeValidatorToFile "./testnet/alwaysFails.uplc" alwaysFailsValidator
 
 saveRedeemer11 :: IO ()
-saveRedeemer11 =  writeValidatorToFile "./testnet/redeemer11.plutus" redeemer11Validator
+saveRedeemer11 =  writeValidatorToFile "./testnet/redeemer11.uplc" redeemer11Validator
 
 saveDatum22 :: IO ()
-saveDatum22 =  writeValidatorToFile "./testnet/datum22.plutus" datum22Validator
+saveDatum22 =  writeValidatorToFile "./testnet/datum22.uplc" datum22Validator
+
+saveDatum23 :: IO ()
+saveDatum23 =  writeValidatorToFile "./testnet/datum23.uplc" datum23Validator
+
+saveDeR :: IO ()
+saveDeR =  writeValidatorToFile "./testnet/dEr.uplc" dErValidator
 
 saveUnit :: IO ()
 saveUnit = writeDataToFile "./testnet/unit.json" ()
@@ -78,14 +103,20 @@ saveValue11 = writeDataToFile "./testnet/value11.json" (11 :: Integer)
 saveValue22 :: IO ()
 saveValue22 = writeDataToFile "./testnet/value22.json" (22 :: Integer)
 
+saveValue23 :: IO ()
+saveValue23 = writeDataToFile "./testnet/value23.json" (23 :: Integer)
+
 saveAll :: IO ()
 saveAll = do
             saveAlwaysSucceeds
             saveAlwaysFails
             saveRedeemer11
             saveDatum22
+            saveDatum23
             saveUnit
             saveTrue
             saveFalse
             saveValue11
             saveValue22
+            saveValue23
+            saveDeR

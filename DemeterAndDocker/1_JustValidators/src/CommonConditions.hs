@@ -33,7 +33,7 @@ conditionator :: ConditionsDatum -> ActionsRedeemer -> ScriptContext -> Bool
 conditionator datum redeemer sContext = case redeemer of
                                          Owner   -> traceIfFalse    "Not signed properly!"  signedByOwner
                                          Time    -> traceIfFalse    "You run out of time!" timeLimitNotReached                                         
-                                         Price   -> traceIfFalse    "Price is not covered"  priceIsCovered
+                                         Price   -> traceIfFalse    "Price value is not reached"  priceIsReached
     where
         signedByOwner :: Bool
         signedByOwner = txSignedBy info $ owner datum
@@ -41,8 +41,8 @@ conditionator datum redeemer sContext = case redeemer of
         timeLimitNotReached :: Bool
         timeLimitNotReached = contains (to $ timelimit datum) $ txInfoValidRange info 
 
-        priceIsCovered :: Bool
-        priceIsCovered =  assetClassValueOf (valueSpent info)  (AssetClass (adaSymbol,adaToken)) > price datum
+        priceIsReached :: Bool
+        priceIsReached =  assetClassValueOf (valueSpent info)  (AssetClass (adaSymbol,adaToken)) > price datum
 
         info :: TxInfo
         info = scriptContextTxInfo sContext
@@ -66,16 +66,16 @@ saveUnit :: IO ()
 saveUnit = writeDataToFile "./testnet/unit.json" ()
 
 saveDatum :: IO ()
-saveDatum  = writeDataToFile "./testnet/datum.json" (Conditions "" 1686837045000 50)
+saveDatum  = writeDataToFile "./testnet/CCdatum.json" (Conditions "8fd2af318fe6fd7a8b2f56861b7dda312411281616b902953abf7121" 1686837045000 50)
 
 saveRedeemerOwner :: IO ()
-saveRedeemerOwner = writeDataToFile "./testnet/redeemOwner.json" Owner
+saveRedeemerOwner = writeDataToFile "./testnet/CCredeemOwner.json" Owner
 
 saveRedeemerTime :: IO ()
-saveRedeemerTime = writeDataToFile "./testnet/redeemTime.json" Time
+saveRedeemerTime = writeDataToFile "./testnet/CCredeemTime.json" Time
 
 saveRedeemerPrice :: IO ()
-saveRedeemerPrice = writeDataToFile "./testnet/redeemPrice.json" Price
+saveRedeemerPrice = writeDataToFile "./testnet/CCredeemPrice.json" Price
 
 saveAll :: IO ()
 saveAll = do

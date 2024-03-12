@@ -1,8 +1,8 @@
-utxoin="0064391f48e814a5259e905f426e438c65ffba6b0bb750c7a438f58c35370c23#0"
-address=$(cat datum22.addr) 
-output="500000000"
+utxoin="0172071937c726836d15e477327e2a89376944941f34364a2222913a75fa6a6f#6"
+address=$(cat conditionator.addr) 
+output="50000000"
 PREVIEW="--testnet-magic 2"
-nami="<provide a wallet to see the tx in blockchain explorers>" 
+nami=$nami 
 
 cardano-cli query protocol-parameters --testnet-magic 2 --out-file protocol.params
 
@@ -11,14 +11,14 @@ cardano-cli transaction build \
   $PREVIEW \
   --tx-in $utxoin \
   --tx-out $address+$output \
-  --tx-out-datum-hash-file unit.json \
+  --tx-out-datum-hash-file TimeDatum.json \
   --change-address $nami \
   --protocol-params-file protocol.params \
   --out-file give.unsigned
 
 cardano-cli transaction sign \
     --tx-body-file give.unsigned \
-    --signing-key-file ialice.skey \
+    --signing-key-file ../../../../Wallets/Adr01.skey \
     $PREVIEW \
     --out-file give.signed
 
